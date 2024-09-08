@@ -1,29 +1,20 @@
-import { ChevronLeft, ChevronRight } from "@carbon/icons-react";
-import { Button, useDisclosure } from "@nextui-org/react";
+import { Button } from "@/components/ui/button";
 import dayjs from "dayjs";
-import { lazy, Suspense, useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { TimeSlot } from "./TimeSlot";
 
 const STARTING_HOUR = 8;
 const ENDING_HOUR = 23;
 
-const BookModal = lazy(() => import("./BookModal"));
-
 export function Book() {
-  const {
-    isOpen: isOpenModal,
-    onOpen: onOpenModal,
-    onOpenChange: onOpenChangeModal,
-  } = useDisclosure();
-
   const [selectedWeekStart, setSelectedWeekStart] = useState(
     dayjs().startOf("week")
   );
 
-  const [selectedSlot, setSelectedSlot] = useState<{
-    date: string;
-    hour: number;
-  }>();
+  //   const [selectedSlot, setSelectedSlot] = useState<{
+  //     date: string;
+  //     hour: number;
+  //   }>();
 
   const selectedDaysList = useMemo(() => {
     const days = [];
@@ -68,23 +59,23 @@ export function Book() {
     <div className="flex flex-col mt-4 gap-4 items-center">
       <div className="flex justify-between">
         <Button
-          isIconOnly
           size="sm"
           onClick={() =>
             setSelectedWeekStart(dayjs(selectedWeekStart).subtract(1, "week"))
           }
           variant="ghost"
-          startContent={<ChevronLeft />}
-        />
+        >
+          Prev
+        </Button>
         <Button
-          isIconOnly
           size="sm"
           onClick={() =>
             setSelectedWeekStart(dayjs(selectedWeekStart).add(1, "week"))
           }
           variant="ghost"
-          startContent={<ChevronRight />}
-        />
+        >
+          Next
+        </Button>
       </div>
 
       <div className="flex gap-4">
@@ -109,7 +100,8 @@ export function Book() {
                     (slot) => slot.day === day.day() && slot.hour === hour
                   )}
                   onClick={() => {
-                    if (!disableTimeSlots(day.day(), hour)) onOpenModal();
+                    if (disableTimeSlots(day.day(), hour))
+                      console.log("Disabled");
                     if (
                       busyTimeSlots.some(
                         (slot) => slot.day === day.day() && slot.hour === hour
@@ -124,11 +116,11 @@ export function Book() {
                       console.log("Booked");
 
                     console.log(day.format("ddd"), hour);
-                    setSelectedSlot({
-                      date: day.format("DD/MM"),
-                      hour,
-                    });
-                    onOpenModal();
+                    // setSelectedSlot({
+                    //   date: day.format("DD/MM"),
+                    //   hour,
+                    // });
+                    // onOpenModal();
                   }}
                 />
               ))
@@ -136,16 +128,6 @@ export function Book() {
           </div>
         ))}
       </div>
-
-      <Suspense fallback={null}>
-        {selectedSlot && (
-          <BookModal
-            slot={selectedSlot}
-            isOpen={isOpenModal}
-            onOpenChange={onOpenChangeModal}
-          />
-        )}
-      </Suspense>
     </div>
   );
 }

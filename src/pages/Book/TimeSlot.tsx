@@ -1,4 +1,4 @@
-import { Button } from "@nextui-org/react";
+import { Button } from "@/components/ui/button";
 import { useMemo } from "react";
 
 export function TimeSlot({
@@ -26,20 +26,13 @@ export function TimeSlot({
     }
   }, [booked, busy, disabled]);
 
-  const variant = useMemo(() => {
-    if (booked || busy) return "solid";
-    else return "ghost";
-  }, [booked, busy]);
-
   return (
     <Button
       disabled={disabled}
-      isDisabled={disabled}
       style={{
         cursor: disabled || busy ? "default" : "pointer",
       }}
       color={color}
-      variant={variant}
       onClick={onClick}
     >
       {String(hour).padStart(2, "0")}:00
