@@ -1,12 +1,16 @@
+import { Header } from "./components/Header/Header";
+import { AuthProvider } from "./context/AuthProvider";
 import { LayoutProvider } from "./context/LayoutProvider";
-import { Book } from "./pages/Book/Book";
+import WeeklyAgendaCard from "./pages/Book/Agenda";
 
 function App() {
   return (
     <div className="flex flex-col align-center h-100 justify-center">
       <LayoutProvider>
-        <h1 className="text-3xl font-bold underline">Spike Time</h1>
-        <Book />
+        <AuthProvider>
+          <Header />
+          <WeeklyAgendaCard />
+        </AuthProvider>
       </LayoutProvider>
     </div>
   );
