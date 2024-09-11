@@ -1,4 +1,4 @@
-import { Header } from "./components/Header/Header";
+import { Header } from "./components/custom/Header/Header";
 import { AuthProvider } from "./context/AuthProvider";
 import { LayoutProvider } from "./context/LayoutProvider";
 import WeeklyAgendaCard from "./pages/Book/Agenda";

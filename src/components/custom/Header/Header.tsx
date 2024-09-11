@@ -1,5 +1,5 @@
 import { useAuth } from "@/hooks/useAuth";
-import { Button } from "../ui/button";
+import { Button } from "../../ui/button";
 import { AUTH } from "@/services/auth";
 
 export function Header() {

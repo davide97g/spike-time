@@ -7,13 +7,13 @@ export function TimeSlot({
   busy = false,
   booked = false,
   onClick,
-}: {
+}: Readonly<{
   hour: number;
   disabled?: boolean;
   busy?: boolean;
   booked?: boolean;
   onClick: () => void;
-}) {
+}>) {
   const color = useMemo(() => {
     if (disabled) {
       return "default";
