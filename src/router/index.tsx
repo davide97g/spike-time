@@ -1,5 +1,6 @@
 import { lazy, Suspense } from "react";
 import { createBrowserRouter } from "react-router-dom";
+import ProtectedRoute from "./ProtectedRoute";
 
 const Login = lazy(() => import("../pages/Login"));
 const Book = lazy(() => import("../pages/Book"));
@@ -10,7 +11,9 @@ export const router = createBrowserRouter([
     path: "/",
     element: (
       <Suspense>
-        <Book />
+        <ProtectedRoute>
+          <Book />
+        </ProtectedRoute>
       </Suspense>
     ),
   },
@@ -26,7 +29,9 @@ export const router = createBrowserRouter([
     path: "/me",
     element: (
       <Suspense>
-        <PersonalArea />
+        <ProtectedRoute>
+          <PersonalArea />
+        </ProtectedRoute>
       </Suspense>
     ),
   },
