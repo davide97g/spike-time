@@ -5,7 +5,7 @@ import { router } from "./router";
 
 function App() {
   return (
-    <div className="flex flex-col align-center h-100 justify-center">
+    <div className="flex flex-col align-center h-full justify-center">
       <LayoutProvider>
         <AuthProvider>
           <RouterProvider router={router} />
