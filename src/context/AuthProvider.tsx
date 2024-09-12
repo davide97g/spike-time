@@ -56,6 +56,7 @@ export function AuthProvider({ children }: Readonly<{ children: ReactNode }>) {
         email: firebaseUser.email!,
         displayName: firebaseUser.displayName!,
         photoURL: firebaseUser.photoURL!,
+        credits: 0,
       });
     }
   }, [createUser, firebaseUser, isFetching, user]);
