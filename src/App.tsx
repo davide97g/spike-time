@@ -1,15 +1,14 @@
-import { Header } from "./components/custom/Header/Header";
+import { RouterProvider } from "react-router-dom";
 import { AuthProvider } from "./context/AuthProvider";
 import { LayoutProvider } from "./context/LayoutProvider";
-import WeeklyAgendaCard from "./pages/Book/Agenda";
+import { router } from "./router";
 
 function App() {
   return (
     <div className="flex flex-col align-center h-100 justify-center">
       <LayoutProvider>
         <AuthProvider>
-          <Header />
-          <WeeklyAgendaCard />
+          <RouterProvider router={router} />
         </AuthProvider>
       </LayoutProvider>
     </div>
