@@ -1,3 +1,4 @@
+import { DatePicker } from "@/components/custom/DatePicker";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -16,17 +17,19 @@ const timeSlots = Array.from({ length: 16 }, (_, i) => i + 8); // 8 AM to 11 PM
 
 export default function WeeklyAgendaCard() {
   const [indexDay, setIndexDay] = useState<number>(0);
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
+  console.log({ selectedDate });
 
   const daysList = useMemo(
     () =>
       Array.from({ length: 3 }, (_, i) =>
         // with -1 the central day is today
-        dayjs().add(i + indexDay - 1, "day")
+        dayjs(selectedDate).add(i + indexDay - 1, "day")
       ).map((day) => ({
         value: day.format("YYYY-MM-DD"),
         label: `${day.format("dddd").slice(0, 3)} ${day.format("D")}`,
       })),
-    [indexDay]
+    [indexDay, selectedDate]
   );
 
   return (
@@ -34,11 +37,18 @@ export default function WeeklyAgendaCard() {
       className="w-full max-w-4xl"
       style={{ maxHeight: "800px", overflowY: "auto" }}
     >
-      <CardHeader>
+      <CardHeader className="flex-col items-center">
         <CardTitle>Weekly Agenda</CardTitle>
         <CardDescription>
           Schedule your week with 1-hour time slots
         </CardDescription>
+        <DatePicker
+          selectedDate={selectedDate}
+          onSelect={(date) => {
+            setIndexDay(0);
+            setSelectedDate(date);
+          }}
+        />
       </CardHeader>
       <CardContent className="overflow-x-auto w-500">
         <div
@@ -53,7 +63,14 @@ export default function WeeklyAgendaCard() {
           <Button
             // className="absolute top-0 left-6 z-50"
             onClick={() => {
-              if (indexDay > 0) setIndexDay(indexDay - SIZE_SCROLLING_DAYS);
+              console.log({ daysList });
+
+              if (
+                dayjs(daysList[0].value).isBefore(dayjs()) &&
+                !dayjs(daysList[0].value).isSame(dayjs(), "day")
+              )
+                return;
+              setIndexDay(indexDay - SIZE_SCROLLING_DAYS);
             }}
           >
             prev
