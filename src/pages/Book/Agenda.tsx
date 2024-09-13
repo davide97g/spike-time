@@ -65,11 +65,7 @@ export default function WeeklyAgendaCard() {
             onClick={() => {
               console.log({ daysList });
 
-              if (
-                dayjs(daysList[0].value).isBefore(dayjs()) &&
-                !dayjs(daysList[0].value).isSame(dayjs(), "day")
-              )
-                return;
+              if (dayjs(daysList[0].value).isBefore(dayjs(), "day")) return;
               setIndexDay(indexDay - SIZE_SCROLLING_DAYS);
             }}
           >
@@ -89,6 +85,7 @@ export default function WeeklyAgendaCard() {
               {timeSlots.map((hour) => (
                 <Fragment key={hour}>
                   <Button
+                    disabled={dayjs(day.value).isBefore(dayjs(), "day")}
                     key={day.value}
                     variant="outline"
                     className="h-10 w-full text-xs"
