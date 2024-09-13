@@ -6,7 +6,7 @@ import { router } from "./router";
 function App() {
   return (
     <div
-      className="flex flex-col align-center h-100 justify-center"
+      className="flex flex-col align-center h-full justify-center"
       style={{ width: "600px" }}
     >
       <LayoutProvider>

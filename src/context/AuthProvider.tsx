@@ -32,6 +32,7 @@ export function AuthProvider({ children }: Readonly<{ children: ReactNode }>) {
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(async (user) => {
+      console.log(user);
       setFirebaseUser(user ?? undefined);
       setLoading(false);
     });
