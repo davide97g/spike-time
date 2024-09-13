@@ -9,6 +9,8 @@ import {
 import dayjs from "dayjs";
 import { Fragment, useMemo, useState } from "react";
 
+const SIZE_SCROLLING_DAYS = 1;
+
 // const daysOfWeek = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 const timeSlots = Array.from({ length: 16 }, (_, i) => i + 8); // 8 AM to 11 PM
 
@@ -17,17 +19,21 @@ export default function WeeklyAgendaCard() {
 
   const daysList = useMemo(
     () =>
-      Array.from({ length: 3 }, (_, i) => dayjs().add(i + indexDay, "day")).map(
-        (day) => ({
-          value: day.format("YYYY-MM-DD"),
-          label: `${day.format("dddd").slice(0, 3)} ${day.format("D")}`,
-        })
-      ),
+      Array.from({ length: 3 }, (_, i) =>
+        // with -1 the central day is today
+        dayjs().add(i + indexDay - 1, "day")
+      ).map((day) => ({
+        value: day.format("YYYY-MM-DD"),
+        label: `${day.format("dddd").slice(0, 3)} ${day.format("D")}`,
+      })),
     [indexDay]
   );
 
   return (
-    <Card className="w-full max-w-4xl">
+    <Card
+      className="w-full max-w-4xl"
+      style={{ maxHeight: "800px", overflowY: "auto" }}
+    >
       <CardHeader>
         <CardTitle>Weekly Agenda</CardTitle>
         <CardDescription>
@@ -35,7 +41,57 @@ export default function WeeklyAgendaCard() {
         </CardDescription>
       </CardHeader>
       <CardContent className="overflow-x-auto w-500">
-        <div className="grid grid-cols-4 gap-1 relative">
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            alignItems: "flex-start",
+            justifyContent: "center",
+            gap: "1rem",
+          }}
+        >
+          <Button
+            // className="absolute top-0 left-6 z-50"
+            onClick={() => {
+              if (indexDay > 0) setIndexDay(indexDay - SIZE_SCROLLING_DAYS);
+            }}
+          >
+            prev
+          </Button>
+          {daysList.map((day) => (
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: "0.5rem",
+              }}
+            >
+              <div key={day.label} className="text-center font-semibold mb-2">
+                {day.label}
+              </div>
+              {timeSlots.map((hour) => (
+                <Fragment key={hour}>
+                  <Button
+                    key={day.value}
+                    variant="outline"
+                    className="h-10 w-full text-xs"
+                    onClick={() => console.log(day.value, hour)}
+                  >
+                    {`${hour}:00`}
+                  </Button>
+                </Fragment>
+              ))}
+            </div>
+          ))}
+          <Button
+            onClick={() => setIndexDay((prev) => prev + SIZE_SCROLLING_DAYS)}
+            // className="absolute top-0 z-50"
+            style={{ right: "-40px" }}
+          >
+            next
+          </Button>
+        </div>
+        {/* <div className="grid grid-cols-4 gap-1 relative">
           <Button
             className="absolute top-0 left-6 z-50"
             onClick={() => {
@@ -75,7 +131,7 @@ export default function WeeklyAgendaCard() {
               ))}
             </Fragment>
           ))}
-        </div>
+        </div> */}
       </CardContent>
     </Card>
   );
