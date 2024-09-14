@@ -1,5 +1,6 @@
 import { useReservationDeleteReservation } from "@/hooks/database/reservations/useReservationDeleteReservation";
 import { useReservationFindReservations } from "@/hooks/database/reservations/useReservationFindReservations";
+import { useUserUpdateUser } from "@/hooks/database/user/useUserUpdateUser";
 import { useAuth } from "@/hooks/useAuth";
 import { STReservation } from "@/types/slot.types";
 import dayjs from "dayjs";
@@ -8,6 +9,9 @@ export const useReservations = ({
   startDate,
 }: Readonly<{ startDate: Date | undefined }>) => {
   const { user } = useAuth();
+
+  const { mutateAsync: updateUser, isPending: loadingUserUpdate } =
+    useUserUpdateUser();
   const {
     data: reservations,
     isFetching,
@@ -49,9 +53,10 @@ export const useReservations = ({
 
   return {
     reservations,
-    isLoading: isFetching || isPending,
+    isLoading: isFetching || isPending || loadingUserUpdate,
     deleteReservation,
     refetch,
     getReservationStatus,
+    updateUser,
   };
 };

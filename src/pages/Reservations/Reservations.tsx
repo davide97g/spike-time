@@ -9,10 +9,12 @@ import { Edit, ToggleLeft, ToggleRight, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { LoaderReservations } from "./LoaderReservations";
 import { useReservations } from "./useReservations";
+import { useAuth } from "@/hooks/useAuth";
 
 export function Reservations() {
   const [startDate, setStartDate] = useState<Date | undefined>();
   const [showActive, setShowActive] = useState(true);
+  const { user, refetch: refetchUser } = useAuth();
 
   const {
     reservations,
@@ -20,6 +22,7 @@ export function Reservations() {
     isLoading,
     deleteReservation,
     refetch,
+    updateUser,
   } = useReservations({
     startDate,
   });
@@ -113,9 +116,14 @@ export function Reservations() {
                             size="icon"
                             aria-label="Delete reservation"
                             onClick={() =>
-                              deleteReservation(reservation).finally(() =>
-                                refetch()
-                              )
+                              deleteReservation(reservation)
+                                .then(() =>
+                                  updateUser({
+                                    id: reservation.userId,
+                                    credits: (user?.credits ?? 0) + 1,
+                                  }).finally(() => refetchUser())
+                                )
+                                .finally(() => refetch())
                             }
                           >
                             <Trash2 className="h-4 w-4" />

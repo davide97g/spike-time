@@ -8,6 +8,7 @@ const Login = lazy(() => import("../pages/Login"));
 const Book = lazy(() => import("../pages/Book"));
 const PersonalArea = lazy(() => import("../pages/PersonalArea"));
 const Reservations = lazy(() => import("../pages/Reservations"));
+const Shop = lazy(() => import("../pages/Shop"));
 
 export const router = createBrowserRouter([
   {
@@ -54,6 +55,19 @@ export const router = createBrowserRouter([
           <Page>
             <Header />
             <PersonalArea />
+          </Page>
+        </ProtectedRoute>
+      </Suspense>
+    ),
+  },
+  {
+    path: "/shop",
+    element: (
+      <Suspense>
+        <ProtectedRoute>
+          <Page>
+            <Header />
+            <Shop />
           </Page>
         </ProtectedRoute>
       </Suspense>
