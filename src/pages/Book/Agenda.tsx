@@ -84,34 +84,31 @@ export default function WeeklyAgendaCard() {
               <div key={day.label} className="text-center font-semibold mb-2">
                 {day.label}
               </div>
-              {timeSlots.map((hour) => (
-                <Fragment key={hour}>
-                  <Button
-                    disabled={
-                      dayjs(day.value).isBefore(dayjs(), "day") ||
-                      getSlotType(day.value, hour) === "reserved"
-                    }
-                    key={day.value}
-                    variant={
-                      getSlotType(day.value, hour) !== "available"
-                        ? "default"
-                        : "secondary"
-                    }
-                    color={
-                      getSlotType(
-                        dayjs(day.value).format("YYYY-MM-DD"),
-                        hour
-                      ) === "available"
-                        ? "green"
-                        : ""
-                    }
-                    className="h-10 w-full text-xs"
-                    onClick={() => reserveSlot(day.value, hour)}
-                  >
-                    {`${hour}:00`}
-                  </Button>
-                </Fragment>
-              ))}
+              {timeSlots.map((hour) => {
+                const slotType = getSlotType(day.value, hour);
+                return (
+                  <Fragment key={hour}>
+                    <Button
+                      disabled={
+                        dayjs(day.value).isBefore(dayjs(), "day") ||
+                        slotType === "reserved"
+                      }
+                      key={day.value}
+                      variant={
+                        slotType !== "available" ? "default" : "secondary"
+                      }
+                      color={slotType === "available" ? "green" : ""}
+                      className="h-10 w-full text-xs"
+                      onClick={() => {
+                        if (slotType === "available")
+                          reserveSlot(day.value, hour);
+                      }}
+                    >
+                      {`${hour}:00`}
+                    </Button>
+                  </Fragment>
+                );
+              })}
             </div>
           ))}
           <Button
