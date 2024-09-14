@@ -1,28 +1,22 @@
+import { DatePicker } from "@/components/custom/DatePicker";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Toggle } from "@/components/ui/toggle";
 import { useReservationFindReservations } from "@/hooks/database/reservations/useReservationFindReservations";
 import { useAuth } from "@/hooks/useAuth";
-import {
-  CalendarIcon,
-  Edit,
-  ToggleLeft,
-  ToggleRight,
-  Trash2,
-} from "lucide-react";
+import dayjs from "dayjs";
+import { Edit, ToggleLeft, ToggleRight, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { LoaderReservations } from "./LoaderReservations";
-import dayjs from "dayjs";
 
 export function Reservations() {
-  const [startDate, setStartDate] = useState("");
+  const [startDate, setStartDate] = useState<Date | undefined>();
   const [showActive, setShowActive] = useState(true);
   const { user } = useAuth();
 
   const { data: reservations, isFetching } = useReservationFindReservations({
-    date: startDate,
+    date: dayjs(startDate).format("YYYY-MM-DD"),
     userId: user?.id,
   });
 
@@ -41,14 +35,7 @@ export function Reservations() {
         <div className="flex-1 max-w-[300px]">
           <Label htmlFor="start-date">Start Date</Label>
           <div className="relative">
-            <Input
-              type="date"
-              id="start-date"
-              value={startDate}
-              onChange={(e) => setStartDate(e.target.value)}
-              className="pl-10"
-            />
-            <CalendarIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+            <DatePicker selectedDate={startDate} onSelect={setStartDate} />
           </div>
         </div>
         <div className="flex items-end">
@@ -56,6 +43,7 @@ export function Reservations() {
             pressed={showActive}
             onPressedChange={setShowActive}
             aria-label="Toggle active reservations"
+            disabled
           >
             {showActive ? (
               <>
