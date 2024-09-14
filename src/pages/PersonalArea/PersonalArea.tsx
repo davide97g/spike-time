@@ -18,7 +18,7 @@ export function PersonalArea() {
   const handleSignOut = () => AUTH.logout();
 
   return (
-    <Card className="w-[350px] text-left">
+    <Card className="w-[350px] my-12 mx-auto text-left">
       <CardHeader>
         <CardTitle>Personal Area</CardTitle>
         <CardDescription>Your account information</CardDescription>

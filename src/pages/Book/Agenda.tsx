@@ -76,7 +76,7 @@ export default function WeeklyAgendaCard() {
 
   return (
     <Card
-      className="w-full max-w-4xl"
+      className="w-full max-w-4xl mt-2"
       style={{ maxHeight: "800px", overflowY: "auto" }}
     >
       <CardHeader className="flex-col items-center">
