@@ -16,7 +16,7 @@ export function Reservations() {
   const { user } = useAuth();
 
   const { data: reservations, isFetching } = useReservationFindReservations({
-    date: dayjs(startDate).format("YYYY-MM-DD"),
+    dates: startDate ? [dayjs(startDate).format("YYYY-MM-DD")] : undefined,
     userId: user?.id,
   });
 

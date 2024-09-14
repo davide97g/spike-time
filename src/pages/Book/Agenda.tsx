@@ -8,9 +8,11 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { useReservationCreateReservation } from "@/hooks/database/reservations/useReservationCreateReservation";
+import { useReservationFindReservations } from "@/hooks/database/reservations/useReservationFindReservations";
 import { useAuth } from "@/hooks/useAuth";
 import dayjs from "dayjs";
-import { Fragment, useMemo, useState } from "react";
+import { Fragment, useCallback, useMemo, useState } from "react";
+import { AgendaSkeleton } from "./LoaderAgenda";
 
 const SIZE_SCROLLING_DAYS = 1;
 
@@ -23,6 +25,17 @@ export default function WeeklyAgendaCard() {
 
   const { mutateAsync: createReservation } = useReservationCreateReservation();
   const { user } = useAuth();
+  const {
+    data: reservations,
+    isFetching: loadingReservations,
+    refetch,
+  } = useReservationFindReservations({
+    dates: [
+      dayjs(selectedDate).subtract(1, "day").format("YYYY-MM-DD"),
+      dayjs(selectedDate).format("YYYY-MM-DD"),
+      dayjs(selectedDate).add(1, "day").format("YYYY-MM-DD"),
+    ],
+  });
 
   const reserveSlot = (day: string, hour: number) => {
     createReservation({
@@ -31,7 +44,7 @@ export default function WeeklyAgendaCard() {
       hourStart: hour,
       hourEnd: hour + 1,
       userId: user?.id,
-    });
+    }).finally(() => refetch());
   };
 
   const daysList = useMemo(
@@ -45,6 +58,21 @@ export default function WeeklyAgendaCard() {
       })),
     [indexDay, selectedDate]
   );
+
+  const getSlotType = useCallback(
+    (day: string, hour: number) => {
+      const reservation = reservations?.find(
+        (reservation) =>
+          reservation.date === day && reservation.hourStart === hour
+      );
+      if (!reservation) return "available";
+      if (reservation.userId === user?.id) return "owned";
+      return "reserved";
+    },
+    [reservations, user]
+  );
+
+  if (loadingReservations) return <AgendaSkeleton />;
 
   return (
     <Card
@@ -75,6 +103,7 @@ export default function WeeklyAgendaCard() {
           }}
         >
           <Button
+            disabled={dayjs(daysList[0].value).isBefore(dayjs(), "day")}
             onClick={() => {
               console.log({ daysList });
 
@@ -82,7 +111,7 @@ export default function WeeklyAgendaCard() {
               setIndexDay(indexDay - SIZE_SCROLLING_DAYS);
             }}
           >
-            prev
+            Prev
           </Button>
           {daysList.map((day) => (
             <div
@@ -98,9 +127,24 @@ export default function WeeklyAgendaCard() {
               {timeSlots.map((hour) => (
                 <Fragment key={hour}>
                   <Button
-                    disabled={dayjs(day.value).isBefore(dayjs(), "day")}
+                    disabled={
+                      dayjs(day.value).isBefore(dayjs(), "day") ||
+                      getSlotType(day.value, hour) === "reserved"
+                    }
                     key={day.value}
-                    variant="outline"
+                    variant={
+                      getSlotType(day.value, hour) === "owned"
+                        ? "default"
+                        : "secondary"
+                    }
+                    color={
+                      getSlotType(
+                        dayjs(day.value).format("YYYY-MM-DD"),
+                        hour
+                      ) === "available"
+                        ? "green"
+                        : ""
+                    }
                     className="h-10 w-full text-xs"
                     onClick={() => {
                       reserveSlot(day.value, hour);
@@ -117,7 +161,7 @@ export default function WeeklyAgendaCard() {
             // className="absolute top-0 z-50"
             style={{ right: "-40px" }}
           >
-            next
+            Next
           </Button>
         </div>
       </CardContent>

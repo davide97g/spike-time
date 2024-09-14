@@ -4,14 +4,14 @@ import { useQuery } from "@tanstack/react-query";
 import { collection, getDocs, query, where } from "firebase/firestore";
 
 export const useReservationFindReservations = ({
-  date,
+  dates,
   userId,
-}: Readonly<{ date?: string; userId?: string }>) => {
+}: Readonly<{ dates?: string[]; userId?: string }>) => {
   return useQuery({
-    queryKey: ["reservations", date, userId],
+    queryKey: ["reservations", dates?.join("-") ?? "-", userId],
     queryFn: async () => {
       const contraints = [];
-      if (date) contraints.push(where("date", "==", date));
+      if (dates) contraints.push(where("date", "in", dates));
       if (userId) contraints.push(where("userId", "==", userId));
       const docRef = query(collection(db, "reservations"), ...contraints);
       const docSnap = await getDocs(docRef);
