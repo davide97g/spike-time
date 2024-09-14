@@ -7,11 +7,28 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { useReservationCreateReservation } from "@/hooks/database/reservations/useReservationCreateReservation";
+
+import dayjs from "dayjs";
+import { useAuth } from "@/hooks/useAuth";
 
 const daysOfWeek = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 const timeSlots = Array.from({ length: 16 }, (_, i) => i + 8); // 8 AM to 11 PM
 
 export default function WeeklyAgendaCard() {
+  const { mutateAsync: createReservation } = useReservationCreateReservation();
+  const { user } = useAuth();
+
+  const reserveSlot = (day: string, hour: number) => {
+    createReservation({
+      id: crypto.randomUUID(),
+      date: dayjs(day).format("YYYY-MM-DD"),
+      hourStart: hour,
+      hourEnd: hour + 1,
+      userId: user?.id,
+    });
+  };
+
   return (
     <Card className="w-full max-w-4xl">
       <CardHeader>
@@ -38,6 +55,7 @@ export default function WeeklyAgendaCard() {
                   key={`${day}-${hour}`}
                   variant="outline"
                   className="h-10 w-full text-xs"
+                  onClick={() => reserveSlot(day, hour)}
                 >
                   {`${hour}:00`}
                 </Button>
