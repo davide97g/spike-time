@@ -5,10 +5,7 @@ import { router } from "./router";
 
 function App() {
   return (
-    <div
-      className="flex flex-col align-center h-full justify-center"
-      style={{ width: "600px" }}
-    >
+    <div className="flex flex-col align-center h-full justify-center w-full">
       <LayoutProvider>
         <AuthProvider>
           <RouterProvider router={router} />

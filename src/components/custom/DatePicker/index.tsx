@@ -1,7 +1,5 @@
-"use client";
-
 import { format } from "date-fns";
-import { Calendar as CalendarIcon } from "lucide-react";
+import { Calendar as CalendarIcon, X as ClearIcon } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -11,6 +9,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
+import { MouseEvent } from "react";
 
 export function DatePicker({
   selectedDate,
@@ -19,6 +18,11 @@ export function DatePicker({
   selectedDate?: Date;
   onSelect: (date?: Date) => void;
 }) {
+  const handleClear = (e: MouseEvent) => {
+    e.stopPropagation(); // Prevent the popover from opening
+    onSelect(undefined);
+  };
+
   return (
     <Popover>
       <PopoverTrigger asChild>
@@ -34,6 +38,12 @@ export function DatePicker({
             format(selectedDate, "PPP")
           ) : (
             <span>Pick a date</span>
+          )}
+          {selectedDate && (
+            <ClearIcon
+              className="ml-auto h-4 w-4 opacity-50 hover:opacity-100"
+              onClick={handleClear}
+            />
           )}
         </Button>
       </PopoverTrigger>

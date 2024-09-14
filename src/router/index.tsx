@@ -1,7 +1,8 @@
+import { Header } from "@/components/custom/Header/Header";
+import { Page } from "@/components/custom/Page/Page";
 import { lazy, Suspense } from "react";
 import { createBrowserRouter } from "react-router-dom";
 import ProtectedRoute from "./ProtectedRoute";
-import { Header } from "@/components/custom/Header/Header";
 
 const Login = lazy(() => import("../pages/Login"));
 const Book = lazy(() => import("../pages/Book"));
@@ -14,8 +15,10 @@ export const router = createBrowserRouter([
     element: (
       <Suspense>
         <ProtectedRoute>
-          <Header />
-          <Book />
+          <Page>
+            <Header />
+            <Book />
+          </Page>
         </ProtectedRoute>
       </Suspense>
     ),
@@ -25,8 +28,10 @@ export const router = createBrowserRouter([
     element: (
       <Suspense>
         <ProtectedRoute>
-          <Header />
-          <Reservations />
+          <Page>
+            <Header />
+            <Reservations />
+          </Page>
         </ProtectedRoute>
       </Suspense>
     ),
@@ -35,7 +40,9 @@ export const router = createBrowserRouter([
     path: "/login",
     element: (
       <Suspense>
-        <Login />
+        <Page>
+          <Login />
+        </Page>
       </Suspense>
     ),
   },
@@ -44,8 +51,10 @@ export const router = createBrowserRouter([
     element: (
       <Suspense>
         <ProtectedRoute>
-          <Header />
-          <PersonalArea />
+          <Page>
+            <Header />
+            <PersonalArea />
+          </Page>
         </ProtectedRoute>
       </Suspense>
     ),

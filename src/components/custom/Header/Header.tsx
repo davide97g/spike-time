@@ -3,14 +3,13 @@ import { Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { ReactNode, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 export function Header() {
   const [isOpen, setIsOpen] = useState(false);
 
-  const toggleMenu = () => setIsOpen(!isOpen);
-
   const { pathname } = useLocation();
+  const navigate = useNavigate();
   const currentPage = pathname.slice(1);
 
   const NavLink = ({
@@ -22,15 +21,17 @@ export function Header() {
   }) => {
     const isActive = currentPage === href.slice(1);
     return (
-      <a
-        href={href}
-        className={`text-foreground hover:text-primary transition-colors ${
+      <p
+        className={`text-foreground hover:text-primary transition-colors cursor-pointer ${
           isActive ? "font-bold" : ""
         }`}
-        onClick={toggleMenu}
+        onClick={() => {
+          navigate(href);
+          setIsOpen(false);
+        }}
       >
         {children}
-      </a>
+      </p>
     );
   };
 

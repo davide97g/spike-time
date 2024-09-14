@@ -7,6 +7,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { useReservationCreateReservation } from "@/hooks/database/reservations/useReservationCreateReservation";
+import { useAuth } from "@/hooks/useAuth";
 import dayjs from "dayjs";
 import { Fragment, useMemo, useState } from "react";
 
@@ -18,7 +20,19 @@ const timeSlots = Array.from({ length: 16 }, (_, i) => i + 8); // 8 AM to 11 PM
 export default function WeeklyAgendaCard() {
   const [indexDay, setIndexDay] = useState<number>(0);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
-  console.log({ selectedDate });
+
+  const { mutateAsync: createReservation } = useReservationCreateReservation();
+  const { user } = useAuth();
+
+  const reserveSlot = (day: string, hour: number) => {
+    createReservation({
+      id: crypto.randomUUID(),
+      date: dayjs(day).format("YYYY-MM-DD"),
+      hourStart: hour,
+      hourEnd: hour + 1,
+      userId: user?.id,
+    });
+  };
 
   const daysList = useMemo(
     () =>
@@ -61,7 +75,6 @@ export default function WeeklyAgendaCard() {
           }}
         >
           <Button
-            // className="absolute top-0 left-6 z-50"
             onClick={() => {
               console.log({ daysList });
 
@@ -89,7 +102,9 @@ export default function WeeklyAgendaCard() {
                     key={day.value}
                     variant="outline"
                     className="h-10 w-full text-xs"
-                    onClick={() => console.log(day.value, hour)}
+                    onClick={() => {
+                      reserveSlot(day.value, hour);
+                    }}
                   >
                     {`${hour}:00`}
                   </Button>
@@ -105,47 +120,6 @@ export default function WeeklyAgendaCard() {
             next
           </Button>
         </div>
-        {/* <div className="grid grid-cols-4 gap-1 relative">
-          <Button
-            className="absolute top-0 left-6 z-50"
-            onClick={() => {
-              if (indexDay > 0) setIndexDay(indexDay - 3);
-            }}
-          >
-            prev
-          </Button>
-          <div className="sticky left-0 bg-background z-10"></div>
-          {daysList.map((day) => (
-            <div key={day.label} className="text-center font-semibold mb-2">
-              {day.label}
-            </div>
-          ))}
-          <Button
-            onClick={() => setIndexDay((prev) => prev + 3)}
-            className="absolute top-0 z-50"
-            style={{ right: "-40px" }}
-          >
-            next
-          </Button>
-
-          {timeSlots.map((hour) => (
-            <Fragment key={hour}>
-              <div className="sticky left-0 bg-background z-10 text-right pr-2 text-sm text-muted-foreground">
-                {hour}:00
-              </div>
-              {daysList.map((day) => (
-                <Button
-                  key={day.value}
-                  variant="outline"
-                  className="h-10 w-full text-xs"
-                  onClick={() => console.log(day.value, hour)}
-                >
-                  {`${hour}:00`}
-                </Button>
-              ))}
-            </Fragment>
-          ))}
-        </div> */}
       </CardContent>
     </Card>
   );
