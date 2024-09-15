@@ -7,14 +7,12 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { useAuth } from "@/hooks/useAuth";
-import { toast } from "sonner";
 
 export function Shop() {
   const { user } = useAuth();
 
   const handlePurchase = () => {
-    // here open stripe product page
-    toast("Purchase functionality not implemented yet.");
+    window.open("https://buy.stripe.com/test_4gw1460C88AXeSk002", "_blank");
   };
 
   return (
