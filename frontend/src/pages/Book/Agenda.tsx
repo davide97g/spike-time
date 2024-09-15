@@ -1,3 +1,4 @@
+import { ConfirmationModal } from "@/components/custom/ConfirmationModal";
 import { DatePicker } from "@/components/custom/DatePicker";
 import { Button } from "@/components/ui/button";
 import {
@@ -12,6 +13,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Fragment } from "react";
 import { AgendaSkeleton } from "./LoaderAgenda";
 import { useBook } from "./useBook";
+import { getDayLabel } from "@/utils";
 
 const SIZE_SCROLLING_DAYS = 1;
 
@@ -88,24 +90,37 @@ export default function WeeklyAgendaCard() {
                 const slotType = getSlotType(day.value, hour);
                 return (
                   <Fragment key={hour}>
-                    <Button
-                      disabled={
-                        dayjs(day.value).isBefore(dayjs(), "day") ||
-                        slotType === "reserved"
+                    <ConfirmationModal
+                      onConfirmButton={
+                        <Button
+                          onClick={() => {
+                            if (slotType === "available")
+                              reserveSlot(day.value, hour);
+                          }}
+                        >
+                          Confirm
+                        </Button>
                       }
-                      key={day.value}
-                      variant={
-                        slotType !== "available" ? "default" : "secondary"
-                      }
-                      color={slotType === "available" ? "green" : ""}
-                      className="h-10 w-full text-xs"
-                      onClick={() => {
-                        if (slotType === "available")
-                          reserveSlot(day.value, hour);
-                      }}
+                      title="Conferma prenotazione"
+                      confirmationData={`${hour}:00 di ${getDayLabel(
+                        day.label
+                      )}`}
                     >
-                      {`${hour}:00`}
-                    </Button>
+                      <Button
+                        disabled={
+                          dayjs(day.value).isBefore(dayjs(), "day") ||
+                          slotType === "reserved"
+                        }
+                        key={day.value}
+                        variant={
+                          slotType !== "available" ? "default" : "secondary"
+                        }
+                        color={slotType === "available" ? "green" : ""}
+                        className="h-10 w-full text-xs"
+                      >
+                        {`${hour}:00`}
+                      </Button>
+                    </ConfirmationModal>
                   </Fragment>
                 );
               })}
