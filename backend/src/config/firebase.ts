@@ -5,10 +5,13 @@ dotenv.config();
 
 const serviceAccount = `${process.env.SECRETS_PATH}/service-account.json`;
 
-console.info(process.env);
-console.log("serviceAccount", serviceAccount);
-
-export const initializeFirebaseApp = () =>
-  admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount),
-  });
+export const initializeFirebaseApp = () => {
+  try {
+    return admin.initializeApp({
+      credential: admin.credential.cert(serviceAccount),
+    });
+  } catch (e) {
+    console.error(e);
+    return null;
+  }
+};
