@@ -5,6 +5,9 @@ dotenv.config();
 
 const serviceAccount = `${process.env.SECRETS_PATH}/service-account.json`;
 
+// log process dir
+console.log(process.cwd());
+
 export const initializeFirebaseApp = () => {
   try {
     return admin.initializeApp({
