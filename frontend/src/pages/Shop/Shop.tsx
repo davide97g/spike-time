@@ -12,7 +12,11 @@ export function Shop() {
   const { user } = useAuth();
 
   const handlePurchase = () => {
-    window.open("https://buy.stripe.com/test_4gw1460C88AXeSk002", "_blank");
+    if (!user) return;
+    window.open(
+      `https://buy.stripe.com/test_4gw1460C88AXeSk002?client_reference_id=${user?.id}`,
+      "_blank"
+    );
   };
 
   return (
