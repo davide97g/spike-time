@@ -38,7 +38,7 @@ export const addBestGuessToUser = async (
   }
   const firstItem = listLineItems.data[0];
 
-  if (firstItem.price?.product !== "prod_QCpdgazOa3lEft") {
+  if (firstItem.price?.product !== process.env.STRIPE_PRODUCT_ID) {
     console.error("Not the right product");
     return;
   }
