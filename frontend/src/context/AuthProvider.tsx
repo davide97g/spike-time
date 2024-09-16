@@ -4,7 +4,7 @@ import { auth } from "../config/firebase";
 
 import { useUserGetUserById } from "@/hooks/database/user/useUserGetUserById";
 import { useUserCreateUser } from "@/hooks/database/user/useUserCreateUser";
-import { STUser } from "@/types/user.types";
+import { STUser } from "types/user.types";
 
 interface AuthContext {
   user?: STUser;

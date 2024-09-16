@@ -1,4 +1,4 @@
-import { STUser } from "@/types/user.types";
+import { STUser } from "types/user.types";
 import { useMutation } from "@tanstack/react-query";
 import { doc, setDoc } from "firebase/firestore";
 import { db } from "../../../config/firebase";

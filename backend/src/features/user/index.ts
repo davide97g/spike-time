@@ -1,12 +1,12 @@
-import dayjs from "dayjs";
 import { FieldValue, getFirestore } from "firebase-admin/firestore";
+import { PaymentRecord } from "../../../../types/payment";
 
 export const addRecordToUserPaymentHistory = async ({
   userId,
   record,
 }: {
   userId: string;
-  record: any;
+  record: PaymentRecord;
 }) => {
   const db = getFirestore();
   const userRef = db.collection("users").doc(userId);

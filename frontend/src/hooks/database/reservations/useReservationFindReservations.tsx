@@ -1,5 +1,5 @@
 import { db } from "@/config/firebase";
-import { STReservation } from "@/types/slot.types";
+import { STReservation } from "types/slot.types";
 import { useQuery } from "@tanstack/react-query";
 import { collection, getDocs, query, where } from "firebase/firestore";
 
