@@ -3,7 +3,10 @@ import admin from "firebase-admin";
 
 dotenv.config();
 
-const serviceAccount = `${process.env.SECRETS_PATH}/service-account.json`;
+const serviceAccount =
+  process.env.MODE === "DEVELOPMENT"
+    ? `${process.env.SECRETS_PATH}/service-account.json`
+    : JSON.parse(process.env.SERVICE_ACCOUNT ?? "{}");
 
 export const initializeFirebaseApp = () => {
   try {
