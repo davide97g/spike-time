@@ -4,7 +4,9 @@ import fs from "fs";
 
 dotenv.config();
 
-const serviceAccount = `${process.env.SECRETS_PATH}/service-account.json`;
+const serviceAccount = process.env.SECRETS_PATH
+  ? `${process.env.SECRETS_PATH}/service-account.json`
+  : "service-account.json";
 
 // log process dir
 console.log("cwd", process.cwd());
