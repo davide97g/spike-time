@@ -9,6 +9,7 @@ export const addProRoutes = (app: Express) => {
     "/webhook",
     express.raw({ type: "application/json" }),
     async (request, response) => {
+      console.info("[Event]: webhook");
       const sig = request.headers["stripe-signature"] as string;
 
       if (!endpointSecret) {
