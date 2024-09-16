@@ -23,7 +23,7 @@ export const getCheckoutSessionListItems = async (id: string) => {
   }
 };
 
-export const addBestGuessToUser = async (
+export const addCreditsToUser = async (
   checkoutSession: Stripe.Checkout.Session
 ) => {
   const userId = checkoutSession.client_reference_id;
@@ -50,9 +50,9 @@ export const addBestGuessToUser = async (
     return;
   }
 
-  console.info("Adding best guess to user", userId, quantity, "best guesses");
+  console.info("Adding credits to user", userId, quantity, "credits");
 
-  // Add best guess to user
+  // Add credits to user
   await incrementUserCredits({ userId, quantity });
   await addRecordToUserPaymentHistory({
     userId,

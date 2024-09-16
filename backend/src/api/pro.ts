@@ -1,6 +1,6 @@
 import express, { Express } from "express";
 import { stripe } from "../config/stripe";
-import { addBestGuessToUser } from "../features/payments";
+import { addCreditsToUser } from "../features/payments";
 
 const endpointSecret = process.env.STRIPE_CHECKOUT_SIGNING_SECRET;
 
@@ -34,7 +34,7 @@ export const addProRoutes = (app: Express) => {
       switch (event?.type) {
         case "checkout.session.completed":
           console.info("[Event]: checkout.session.completed");
-          await addBestGuessToUser(event.data.object);
+          await addCreditsToUser(event.data.object);
           break;
         // ... handle other event types
         default:
