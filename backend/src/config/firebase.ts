@@ -7,15 +7,19 @@ dotenv.config();
 const serviceAccount = `${process.env.SECRETS_PATH}/service-account.json`;
 
 // log process dir
-console.log(process.cwd());
+console.log("cwd", process.cwd());
+
+// log folders in cwd
+fs.readdir(process.cwd(), (err: any, files: any) => {
+  console.log("cwd --> files:", files);
+});
 
 // log all files in the secrets path
 fs.readdir(
-  process.env.SECRETS_PATH || process.cwd(),
+  process.env.SECRETS_PATH ?? process.cwd(),
   (err: any, files: any) => {
-    files.forEach((file: any) => {
-      console.log(file);
-    });
+    // log all files
+    console.log("secrets --> files", files);
   }
 );
 
