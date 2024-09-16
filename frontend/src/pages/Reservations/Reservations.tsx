@@ -10,11 +10,32 @@ import { useState } from "react";
 import { LoaderReservations } from "./LoaderReservations";
 import { useReservations } from "./useReservations";
 import { useAuth } from "@/hooks/useAuth";
+import { Modal } from "@/components/custom/Modal";
+import { useReservationFindReservations } from "@/hooks/database/reservations/useReservationFindReservations";
+import Dropdown from "@/components/custom/Dropdown";
+import { SelectItem } from "@radix-ui/react-select";
+
+const generateTimeOptions = () => {
+  const options = [];
+  for (let hour = 8; hour <= 23; hour++) {
+    const time = `${hour.toString().padStart(2, "0")}:00`;
+    options.push(
+      <SelectItem key={time} value={time}>
+        {time}
+      </SelectItem>
+    );
+  }
+  return options;
+};
 
 export function Reservations() {
   const [startDate, setStartDate] = useState<Date | undefined>();
   const [showActive, setShowActive] = useState(true);
   const { user, refetch: refetchUser } = useAuth();
+  const [startDateEditMode, setStartDateEditMode] = useState<Date | undefined>(
+    dayjs().toDate()
+  );
+  const [selectedTime, setSelectedTime] = useState<string | undefined>();
 
   const {
     reservations,
@@ -26,6 +47,13 @@ export function Reservations() {
   } = useReservations({
     startDate,
   });
+
+  const { data: allReservations, isLoading: isLoadingAllReservations } =
+    useReservationFindReservations({
+      dates: [dayjs(startDateEditMode).format("YYYY-MM-DD")],
+    });
+
+  console.log({ allReservations });
 
   return (
     <div className="container mx-auto px-4 py-8 text-left">
@@ -104,13 +132,49 @@ export function Reservations() {
                       </div>
                       {status === "active" && (
                         <div className="flex space-x-2">
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            aria-label="Edit reservation"
+                          <Modal
+                            dialogTrigger={
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                aria-label="Edit reservation"
+                              >
+                                <Edit className="h-4 w-4" />
+                              </Button>
+                            }
+                            onConfirmButton={<Button>confirm</Button>}
+                            title="Modifica prenotazione"
                           >
-                            <Edit className="h-4 w-4" />
-                          </Button>
+                            {isLoadingAllReservations ? (
+                              <LoaderReservations />
+                            ) : (
+                              <>
+                                <p>
+                                  Are you sure you want to edit this
+                                  reservation?
+                                </p>
+                                <DatePicker
+                                  selectedDate={startDateEditMode}
+                                  onSelect={setStartDateEditMode}
+                                />
+                                <Dropdown
+                                  selectedValue={selectedTime}
+                                  onChange={(value) => setSelectedTime(value)}
+                                >
+                                  {generateTimeOptions().filter(
+                                    (time) =>
+                                      !allReservations
+                                        ?.map((r) => r.hourStart)
+                                        .includes(
+                                          parseInt(
+                                            time.props.value.split(":")[0]
+                                          )
+                                        )
+                                  )}
+                                </Dropdown>
+                              </>
+                            )}
+                          </Modal>
                           <Button
                             variant="ghost"
                             size="icon"
