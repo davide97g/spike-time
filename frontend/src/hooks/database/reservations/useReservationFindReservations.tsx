@@ -7,6 +7,7 @@ export const useReservationFindReservations = ({
   dates,
   userId,
 }: Readonly<{ dates?: string[]; userId?: string }>) => {
+  console.log("useReservationFindReservations", dates, userId);
   return useQuery({
     queryKey: ["reservations", dates?.join("-") ?? "-", userId],
     queryFn: async () => {

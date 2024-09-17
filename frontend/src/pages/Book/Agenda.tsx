@@ -1,4 +1,4 @@
-import { ConfirmationModal } from "@/components/custom/ConfirmationModal";
+import { Modal } from "@/components/custom/Modal";
 import { DatePicker } from "@/components/custom/DatePicker";
 import { Button } from "@/components/ui/button";
 import {
@@ -8,12 +8,12 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { getDayLabel } from "@/utils";
 import dayjs from "dayjs";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Fragment } from "react";
 import { AgendaSkeleton } from "./LoaderAgenda";
 import { useBook } from "./useBook";
-import { getDayLabel } from "@/utils";
 
 const SIZE_SCROLLING_DAYS = 1;
 
@@ -69,6 +69,7 @@ export default function WeeklyAgendaCard() {
 
               if (dayjs(daysList[0].value).isBefore(dayjs(), "day")) return;
               setIndexDay(indexDay - SIZE_SCROLLING_DAYS);
+              setSelectedDate(dayjs(selectedDate).subtract(1, "day").toDate());
             }}
             variant="ghost"
           >
@@ -90,7 +91,7 @@ export default function WeeklyAgendaCard() {
                 const slotType = getSlotType(day.value, hour);
                 return (
                   <Fragment key={hour}>
-                    <ConfirmationModal
+                    <Modal
                       onConfirmButton={
                         <Button
                           onClick={() => {
@@ -98,36 +99,47 @@ export default function WeeklyAgendaCard() {
                               reserveSlot(day.value, hour);
                           }}
                         >
-                          Confirm
+                          Conferma
                         </Button>
                       }
                       title="Conferma prenotazione"
-                      confirmationData={`${hour}:00 di ${getDayLabel(
-                        day.label
-                      )}`}
+                      dialogTrigger={
+                        <Button
+                          disabled={
+                            dayjs(day.value).isBefore(dayjs(), "day") ||
+                            slotType === "reserved"
+                          }
+                          key={day.value}
+                          variant={
+                            slotType !== "available" ? "default" : "secondary"
+                          }
+                          color={slotType === "available" ? "green" : ""}
+                          className={`h-10 w-full text-xs ${
+                            slotType === "owned" ? "cursor-default" : ""
+                          }`}
+                          onClick={(e) => {
+                            if (slotType === "reserved" || slotType === "owned")
+                              e.preventDefault();
+                          }}
+                        >
+                          {`${hour}:00`}
+                        </Button>
+                      }
                     >
-                      <Button
-                        disabled={
-                          dayjs(day.value).isBefore(dayjs(), "day") ||
-                          slotType === "reserved"
-                        }
-                        key={day.value}
-                        variant={
-                          slotType !== "available" ? "default" : "secondary"
-                        }
-                        color={slotType === "available" ? "green" : ""}
-                        className="h-10 w-full text-xs"
-                      >
-                        {`${hour}:00`}
-                      </Button>
-                    </ConfirmationModal>
+                      {`Sei sicuro di voler confermare la tua prenotazione per ${hour}:00 di ${getDayLabel(
+                        day.label
+                      )}?`}
+                    </Modal>
                   </Fragment>
                 );
               })}
             </div>
           ))}
           <Button
-            onClick={() => setIndexDay((prev) => prev + SIZE_SCROLLING_DAYS)}
+            onClick={() => {
+              setIndexDay((prev) => prev + SIZE_SCROLLING_DAYS);
+              setSelectedDate(dayjs(selectedDate).add(1, "day").toDate());
+            }}
             // className="absolute top-0 z-50"
             style={{ right: "-40px" }}
             variant="ghost"

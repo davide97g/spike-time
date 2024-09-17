@@ -1,20 +1,46 @@
 import { DatePicker } from "@/components/custom/DatePicker";
+import Dropdown from "@/components/custom/Dropdown";
+import { Modal } from "@/components/custom/Modal";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Toggle } from "@/components/ui/toggle";
+import { useReservationFindReservations } from "@/hooks/database/reservations/useReservationFindReservations";
+import { useAuth } from "@/hooks/useAuth";
 import dayjs from "dayjs";
 import { Edit, ToggleLeft, ToggleRight, Trash2 } from "lucide-react";
 import { useState } from "react";
+import { toast } from "sonner";
 import { LoaderReservations } from "./LoaderReservations";
 import { useReservations } from "./useReservations";
-import { useAuth } from "@/hooks/useAuth";
+import { STReservation } from "types/slot.types";
+
+const generateTimeOptions = ({
+  reservations,
+}: {
+  reservations: STReservation[];
+}) => {
+  const options = [];
+  for (let hour = 8; hour <= 23; hour++) {
+    const time = `${hour.toString().padStart(2, "0")}:00`;
+    if (reservations.every((r) => r.hourStart !== hour))
+      options.push({
+        key: time,
+        label: time,
+      });
+  }
+  return options;
+};
 
 export function Reservations() {
   const [startDate, setStartDate] = useState<Date | undefined>();
   const [showActive, setShowActive] = useState(true);
   const { user, refetch: refetchUser } = useAuth();
+  const [startDateEditMode, setStartDateEditMode] = useState<Date | undefined>(
+    dayjs().toDate()
+  );
+  const [selectedTime, setSelectedTime] = useState<string | undefined>();
 
   const {
     reservations,
@@ -23,9 +49,17 @@ export function Reservations() {
     deleteReservation,
     refetch,
     updateUser,
+    editeReservation,
   } = useReservations({
     startDate,
   });
+
+  const { data: allReservations, isLoading: isLoadingAllReservations } =
+    useReservationFindReservations({
+      dates: [dayjs(startDateEditMode).format("YYYY-MM-DD")],
+    });
+
+  console.log({ allReservations });
 
   return (
     <div className="container mx-auto px-4 py-8 text-left">
@@ -74,7 +108,6 @@ export function Reservations() {
             })
             ?.map((reservation) => {
               const status = getReservationStatus(reservation);
-
               return (
                 <Card
                   key={reservation.id}
@@ -104,13 +137,89 @@ export function Reservations() {
                       </div>
                       {status === "active" && (
                         <div className="flex space-x-2">
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            aria-label="Edit reservation"
+                          <Modal
+                            dialogTrigger={
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                aria-label="Edit reservation"
+                                onClick={() => {
+                                  setStartDateEditMode(
+                                    dayjs(reservation.date).toDate()
+                                  );
+                                  setSelectedTime(
+                                    `${reservation.hourStart
+                                      .toString()
+                                      .padStart(2, "0")}:00`
+                                  );
+                                }}
+                              >
+                                <Edit className="h-4 w-4" />
+                              </Button>
+                            }
+                            onConfirmButton={
+                              <Button
+                                onClick={() => {
+                                  if (!startDateEditMode || !selectedTime) {
+                                    toast(
+                                      `${
+                                        !startDateEditMode
+                                          ? "Data mancante"
+                                          : "Orario mancante"
+                                      }`,
+                                      {
+                                        description: `${
+                                          !startDateEditMode
+                                            ? "Inserire una data"
+                                            : "Inserire un orario"
+                                        }`,
+                                      }
+                                    );
+                                    return;
+                                  }
+
+                                  editeReservation({
+                                    reservation,
+                                    date: startDateEditMode,
+                                    hourStart: parseInt(
+                                      selectedTime?.split(":")[0]
+                                    ),
+                                  }).finally(() => refetch());
+                                  refetch();
+                                }}
+                              >
+                                Salva
+                              </Button>
+                            }
+                            title="Modifica prenotazione"
                           >
-                            <Edit className="h-4 w-4" />
-                          </Button>
+                            {isLoadingAllReservations ? (
+                              <LoaderReservations />
+                            ) : (
+                              <div className="flex flex-col gap-2">
+                                <p>
+                                  Sei sicuro di voler modificare la
+                                  prenotazione?
+                                </p>
+                                <DatePicker
+                                  selectedDate={startDateEditMode}
+                                  onSelect={setStartDateEditMode}
+                                />
+                                <Dropdown
+                                  placeholder="Seleziona un orario"
+                                  label="Orario"
+                                  options={generateTimeOptions({
+                                    reservations:
+                                      allReservations?.filter(
+                                        (r) => r.id !== reservation.id
+                                      ) ?? [],
+                                  })}
+                                  selectedValue={selectedTime}
+                                  onChange={(value) => setSelectedTime(value)}
+                                />
+                              </div>
+                            )}
+                          </Modal>
                           <Button
                             variant="ghost"
                             size="icon"

@@ -11,30 +11,24 @@ import {
 } from "@/components/ui/dialog";
 import { ReactNode } from "react";
 
-export function ConfirmationModal({
-  children,
+export function Modal({
+  dialogTrigger,
   onConfirmButton,
   title,
-  confirmationData,
+  children,
 }: {
-  children: ReactNode;
+  dialogTrigger: ReactNode;
   onConfirmButton: ReactNode;
   title: string;
-  confirmationData: string;
+  children: ReactNode;
 }) {
   return (
     <Dialog>
-      <DialogTrigger asChild>
-        {children}
-        {/* <Button variant="outline">Share</Button> */}
-      </DialogTrigger>
+      <DialogTrigger asChild>{dialogTrigger}</DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
-          <DialogDescription>
-            Sei sicuro di voler confermare la tua prenotazione per{" "}
-            {confirmationData}?
-          </DialogDescription>
+          <DialogDescription>{children}</DialogDescription>
         </DialogHeader>
 
         <DialogFooter className="sm:justify-between">
