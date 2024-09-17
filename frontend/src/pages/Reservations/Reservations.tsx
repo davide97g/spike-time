@@ -44,8 +44,11 @@ export function Reservations() {
     deleteReservation,
     refetch,
     updateUser,
+    editeReservation,
   } = useReservations({
     startDate,
+    startTimeEdited: selectedTime ? parseInt(selectedTime?.split(":")[0]) : -1,
+    editedDate: startDateEditMode,
   });
 
   const { data: allReservations, isLoading: isLoadingAllReservations } =
@@ -102,7 +105,6 @@ export function Reservations() {
             })
             ?.map((reservation) => {
               const status = getReservationStatus(reservation);
-
               return (
                 <Card
                   key={reservation.id}
@@ -142,16 +144,31 @@ export function Reservations() {
                                 <Edit className="h-4 w-4" />
                               </Button>
                             }
-                            onConfirmButton={<Button>confirm</Button>}
+                            onConfirmButton={
+                              <Button
+                                onClick={() => {
+                                  editeReservation(reservation);
+                                  refetch();
+                                }}
+                              >
+                                confirm
+                              </Button>
+                            }
                             title="Modifica prenotazione"
                           >
                             {isLoadingAllReservations ? (
                               <LoaderReservations />
                             ) : (
-                              <>
+                              <div
+                                style={{
+                                  display: "flex",
+                                  flexDirection: "column",
+                                  gap: "1rem",
+                                }}
+                              >
                                 <p>
-                                  Are you sure you want to edit this
-                                  reservation?
+                                  Sei sicuro di voler modificare la
+                                  prenotazione?
                                 </p>
                                 <DatePicker
                                   selectedDate={startDateEditMode}
@@ -172,7 +189,7 @@ export function Reservations() {
                                         )
                                   )}
                                 </Dropdown>
-                              </>
+                              </div>
                             )}
                           </Modal>
                           <Button

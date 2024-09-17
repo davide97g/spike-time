@@ -4,10 +4,17 @@ import { useUserUpdateUser } from "@/hooks/database/user/useUserUpdateUser";
 import { useAuth } from "@/hooks/useAuth";
 import { STReservation } from "types/slot.types";
 import dayjs from "dayjs";
+import { useReservationEditReservation } from "@/hooks/database/reservations/useReservationEditReservation";
 
 export const useReservations = ({
   startDate,
-}: Readonly<{ startDate: Date | undefined }>) => {
+  editedDate,
+  startTimeEdited,
+}: Readonly<{
+  startDate: Date | undefined;
+  editedDate: Date | undefined;
+  startTimeEdited: number | undefined;
+}>) => {
   const { user } = useAuth();
 
   const { mutateAsync: updateUser, isPending: loadingUserUpdate } =
@@ -20,6 +27,12 @@ export const useReservations = ({
     dates: startDate ? [dayjs(startDate).format("YYYY-MM-DD")] : undefined,
     userId: user?.id,
   });
+
+  const { mutateAsync: editeReservation, isPending: isPendingEditReservation } =
+    useReservationEditReservation({
+      date: editedDate,
+      hourStart: startTimeEdited,
+    });
 
   const { mutateAsync: deleteReservation, isPending } =
     useReservationDeleteReservation();
@@ -58,5 +71,7 @@ export const useReservations = ({
     refetch,
     getReservationStatus,
     updateUser,
+    editeReservation,
+    isPendingEditReservation,
   };
 };

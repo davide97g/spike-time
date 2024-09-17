@@ -39,7 +39,9 @@ export default function Dropdown({
   return (
     <Select value={selectedValue} onValueChange={handleOnChange}>
       <SelectTrigger className="w-[180px]">
-        <SelectValue placeholder="Seleziona un orario" />
+        <SelectValue placeholder="Seleziona un orario">
+          {selectedValue}
+        </SelectValue>
       </SelectTrigger>
       <SelectContent>
         <SelectGroup>{children}</SelectGroup>
