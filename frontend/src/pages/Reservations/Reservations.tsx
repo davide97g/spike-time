@@ -196,13 +196,7 @@ export function Reservations() {
                             {isLoadingAllReservations ? (
                               <LoaderReservations />
                             ) : (
-                              <div
-                                style={{
-                                  display: "flex",
-                                  flexDirection: "column",
-                                  gap: "1rem",
-                                }}
-                              >
+                              <div className="flex flex-col gap-2">
                                 <p>
                                   Sei sicuro di voler modificare la
                                   prenotazione?
