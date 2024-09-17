@@ -15,6 +15,7 @@ import { toast } from "sonner";
 import { LoaderReservations } from "./LoaderReservations";
 import { useReservations } from "./useReservations";
 import { STReservation } from "types/slot.types";
+import { AlertDialogModal } from "@/components/custom/AlertDialog";
 
 const generateTimeOptions = ({
   reservations,
@@ -36,6 +37,7 @@ const generateTimeOptions = ({
 export function Reservations() {
   const [startDate, setStartDate] = useState<Date | undefined>();
   const [showActive, setShowActive] = useState(true);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const { user, refetch: refetchUser } = useAuth();
   const [startDateEditMode, setStartDateEditMode] = useState<Date | undefined>(
     dayjs().toDate()
@@ -136,95 +138,120 @@ export function Reservations() {
                         </p>
                       </div>
                       {status === "active" && (
-                        <div className="flex space-x-2">
-                          <Modal
-                            dialogTrigger={
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                aria-label="Edit reservation"
-                                onClick={() => {
-                                  setStartDateEditMode(
-                                    dayjs(reservation.date).toDate()
-                                  );
-                                  setSelectedTime(
-                                    `${reservation.hourStart
-                                      .toString()
-                                      .padStart(2, "0")}:00`
-                                  );
-                                }}
-                              >
-                                <Edit className="h-4 w-4" />
-                              </Button>
-                            }
-                            onConfirmButton={
-                              <Button
-                                onClick={() => {
-                                  if (!startDateEditMode || !selectedTime) {
-                                    toast(
-                                      `${
-                                        !startDateEditMode
-                                          ? "Data mancante"
-                                          : "Orario mancante"
-                                      }`,
-                                      {
-                                        description: `${
-                                          !startDateEditMode
-                                            ? "Inserire una data"
-                                            : "Inserire un orario"
-                                        }`,
-                                      }
+                        <>
+                          <div className="flex space-x-2">
+                            <Modal
+                              dialogTrigger={
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  aria-label="Edit reservation"
+                                  onClick={() => {
+                                    setStartDateEditMode(
+                                      dayjs(reservation.date).toDate()
                                     );
-                                    return;
-                                  }
+                                    setSelectedTime(
+                                      `${reservation.hourStart
+                                        .toString()
+                                        .padStart(2, "0")}:00`
+                                    );
+                                  }}
+                                >
+                                  <Edit className="h-4 w-4" />
+                                </Button>
+                              }
+                              onConfirmButton={
+                                <Button
+                                  onClick={() => {
+                                    if (!startDateEditMode || !selectedTime) {
+                                      toast(
+                                        `${
+                                          !startDateEditMode
+                                            ? "Data mancante"
+                                            : "Orario mancante"
+                                        }`,
+                                        {
+                                          description: `${
+                                            !startDateEditMode
+                                              ? "Inserire una data"
+                                              : "Inserire un orario"
+                                          }`,
+                                        }
+                                      );
+                                      return;
+                                    }
 
-                                  editeReservation({
-                                    reservation,
-                                    date: startDateEditMode,
-                                    hourStart: parseInt(
-                                      selectedTime?.split(":")[0]
-                                    ),
-                                  }).finally(() => refetch());
-                                  refetch();
-                                }}
-                              >
-                                Salva
-                              </Button>
-                            }
-                            title="Modifica prenotazione"
-                          >
-                            {isLoadingAllReservations ? (
-                              <LoaderReservations />
-                            ) : (
-                              <div className="flex flex-col gap-2">
-                                <p>
-                                  Sei sicuro di voler modificare la
-                                  prenotazione?
-                                </p>
-                                <DatePicker
-                                  selectedDate={startDateEditMode}
-                                  onSelect={setStartDateEditMode}
-                                />
-                                <Dropdown
-                                  placeholder="Seleziona un orario"
-                                  label="Orario"
-                                  options={generateTimeOptions({
-                                    reservations:
-                                      allReservations?.filter(
-                                        (r) => r.id !== reservation.id
-                                      ) ?? [],
-                                  })}
-                                  selectedValue={selectedTime}
-                                  onChange={(value) => setSelectedTime(value)}
-                                />
-                              </div>
-                            )}
-                          </Modal>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            aria-label="Delete reservation"
-                            onClick={() =>
+                                    editeReservation({
+                                      reservation,
+                                      date: startDateEditMode,
+                                      hourStart: parseInt(
+                                        selectedTime?.split(":")[0]
+                                      ),
+                                    }).finally(() => refetch());
+                                    refetch();
+                                  }}
+                                >
+                                  Salva
+                                </Button>
+                              }
+                              title="Modifica prenotazione"
+                            >
+                              {isLoadingAllReservations ? (
+                                <LoaderReservations />
+                              ) : (
+                                <div className="flex flex-col gap-2">
+                                  <p>
+                                    Sei sicuro di voler modificare la
+                                    prenotazione?
+                                  </p>
+                                  <DatePicker
+                                    selectedDate={startDateEditMode}
+                                    onSelect={setStartDateEditMode}
+                                  />
+                                  <Dropdown
+                                    placeholder="Seleziona un orario"
+                                    label="Orario"
+                                    options={generateTimeOptions({
+                                      reservations:
+                                        allReservations?.filter(
+                                          (r) => r.id !== reservation.id
+                                        ) ?? [],
+                                    })}
+                                    selectedValue={selectedTime}
+                                    onChange={(value) => setSelectedTime(value)}
+                                  />
+                                </div>
+                              )}
+                            </Modal>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              aria-label="Delete reservation"
+                              onClick={
+                                () => setIsDeleteDialogOpen(true)
+                                // deleteReservation(reservation)
+                                //   .then(() =>
+                                //     updateUser({
+                                //       id: reservation.userId,
+                                //       credits: (user?.credits ?? 0) + 1,
+                                //     }).finally(() => refetchUser())
+                                //   )
+                                //   .finally(() => refetch())
+                              }
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+                          <AlertDialogModal
+                            isOpen={isDeleteDialogOpen}
+                            onChange={() => setIsDeleteDialogOpen(false)}
+                            title="Cancella prenotazione"
+                            text={`Sei sicuro di voler cancellare la prenotazione ${dayjs(
+                              reservation.date
+                            ).format("DD/MM/YYYY")} alle ore ${
+                              reservation.hourStart
+                            }:00?`}
+                            onCofirm={() =>
                               deleteReservation(reservation)
                                 .then(() =>
                                   updateUser({
@@ -234,10 +261,8 @@ export function Reservations() {
                                 )
                                 .finally(() => refetch())
                             }
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </div>
+                          />
+                        </>
                       )}
                       {status !== "active" && (
                         <div className="flex space-x-2">
