@@ -14,6 +14,7 @@ import { Modal } from "@/components/custom/Modal";
 import { useReservationFindReservations } from "@/hooks/database/reservations/useReservationFindReservations";
 import Dropdown from "@/components/custom/Dropdown";
 import { SelectItem } from "@radix-ui/react-select";
+import { toast } from "sonner";
 
 const generateTimeOptions = () => {
   const options = [];
@@ -47,8 +48,6 @@ export function Reservations() {
     editeReservation,
   } = useReservations({
     startDate,
-    startTimeEdited: selectedTime ? parseInt(selectedTime?.split(":")[0]) : -1,
-    editedDate: startDateEditMode,
   });
 
   const { data: allReservations, isLoading: isLoadingAllReservations } =
@@ -147,11 +146,35 @@ export function Reservations() {
                             onConfirmButton={
                               <Button
                                 onClick={() => {
-                                  editeReservation(reservation);
+                                  if (!startDateEditMode || !selectedTime) {
+                                    toast(
+                                      `${
+                                        !startDateEditMode
+                                          ? "Data mancante"
+                                          : "Orario mancante"
+                                      }`,
+                                      {
+                                        description: `${
+                                          !startDateEditMode
+                                            ? "Inserire una data"
+                                            : "Inserire un orario"
+                                        }`,
+                                      }
+                                    );
+                                    return;
+                                  }
+
+                                  editeReservation({
+                                    reservation,
+                                    date: startDateEditMode,
+                                    hourStart: parseInt(
+                                      selectedTime?.split(":")[0]
+                                    ),
+                                  }).finally(() => refetch());
                                   refetch();
                                 }}
                               >
-                                confirm
+                                Salva
                               </Button>
                             }
                             title="Modifica prenotazione"

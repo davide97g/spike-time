@@ -4,15 +4,17 @@ import dayjs from "dayjs";
 import { doc, setDoc } from "firebase/firestore";
 import { STReservation } from "types/slot.types";
 
-export const useReservationEditReservation = ({
-  date,
-  hourStart,
-}: {
-  date?: Date;
-  hourStart?: number;
-}) => {
+export const useReservationEditReservation = () => {
   return useMutation({
-    mutationFn: async (reservation: STReservation) => {
+    mutationFn: async ({
+      reservation,
+      date,
+      hourStart,
+    }: {
+      reservation: STReservation;
+      date?: Date;
+      hourStart?: number;
+    }) => {
       try {
         const docRef = doc(db, "reservations", reservation.id);
         await setDoc(docRef, {

@@ -8,12 +8,8 @@ import { useReservationEditReservation } from "@/hooks/database/reservations/use
 
 export const useReservations = ({
   startDate,
-  editedDate,
-  startTimeEdited,
 }: Readonly<{
   startDate: Date | undefined;
-  editedDate: Date | undefined;
-  startTimeEdited: number | undefined;
 }>) => {
   const { user } = useAuth();
 
@@ -29,10 +25,7 @@ export const useReservations = ({
   });
 
   const { mutateAsync: editeReservation, isPending: isPendingEditReservation } =
-    useReservationEditReservation({
-      date: editedDate,
-      hourStart: startTimeEdited,
-    });
+    useReservationEditReservation();
 
   const { mutateAsync: deleteReservation, isPending } =
     useReservationDeleteReservation();
