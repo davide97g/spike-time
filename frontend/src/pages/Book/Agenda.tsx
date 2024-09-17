@@ -99,7 +99,7 @@ export default function WeeklyAgendaCard() {
                               reserveSlot(day.value, hour);
                           }}
                         >
-                          Confirm
+                          Conferma
                         </Button>
                       }
                       title="Conferma prenotazione"
@@ -114,7 +114,13 @@ export default function WeeklyAgendaCard() {
                             slotType !== "available" ? "default" : "secondary"
                           }
                           color={slotType === "available" ? "green" : ""}
-                          className="h-10 w-full text-xs"
+                          className={`h-10 w-full text-xs ${
+                            slotType === "owned" ? "cursor-default" : ""
+                          }`}
+                          onClick={(e) => {
+                            if (slotType === "reserved" || slotType === "owned")
+                              e.preventDefault();
+                          }}
                         >
                           {`${hour}:00`}
                         </Button>
