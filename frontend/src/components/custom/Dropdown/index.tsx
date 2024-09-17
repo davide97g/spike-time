@@ -2,50 +2,46 @@ import {
   Select,
   SelectContent,
   SelectGroup,
+  SelectItem,
+  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ReactNode } from "react";
 
 export default function Dropdown({
-  children,
+  options,
   selectedValue,
   onChange,
-}: {
-  children: ReactNode;
+  label,
+  placeholder,
+}: Readonly<{
+  options: { key: string; label: string }[];
   selectedValue?: string;
   onChange: (e: string) => void;
-}) {
-  console.log({ selectedValue });
-
-  // const generateTimeOptions = () => {
-  //   const options = [];
-  //   for (let hour = 8; hour <= 23; hour++) {
-  //     const time = `${hour.toString().padStart(2, "0")}:00`;
-  //     options.push(
-  //       <SelectItem key={time} value={time}>
-  //         {time}
-  //       </SelectItem>
-  //     );
-  //   }
-  //   return options;
-  // };
-
+  label?: string;
+  placeholder?: string;
+}>) {
   const handleOnChange = (value: string) => {
     console.log({ value });
     onChange(value);
   };
 
+  console.log({ selectedValue, options });
+
   return (
-    <Select value={selectedValue} onValueChange={handleOnChange}>
+    <Select onValueChange={handleOnChange} defaultValue={selectedValue}>
       <SelectTrigger className="w-[180px]">
-        <SelectValue placeholder="Seleziona un orario">
-          {selectedValue}
-        </SelectValue>
+        <SelectValue placeholder={placeholder ?? ""} />
       </SelectTrigger>
       <SelectContent>
-        <SelectGroup>{children}</SelectGroup>
-        {/* <SelectGroup>{generateTimeOptions()}</SelectGroup> */}
+        <SelectGroup>
+          {label && <SelectLabel>{label}</SelectLabel>}
+          {options.map((option) => (
+            <SelectItem value={option.key} key={option.key}>
+              {option.label}
+            </SelectItem>
+          ))}
+        </SelectGroup>
       </SelectContent>
     </Select>
   );

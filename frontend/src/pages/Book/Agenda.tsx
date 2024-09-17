@@ -69,6 +69,7 @@ export default function WeeklyAgendaCard() {
 
               if (dayjs(daysList[0].value).isBefore(dayjs(), "day")) return;
               setIndexDay(indexDay - SIZE_SCROLLING_DAYS);
+              setSelectedDate(dayjs(selectedDate).subtract(1, "day").toDate());
             }}
             variant="ghost"
           >
@@ -129,7 +130,10 @@ export default function WeeklyAgendaCard() {
             </div>
           ))}
           <Button
-            onClick={() => setIndexDay((prev) => prev + SIZE_SCROLLING_DAYS)}
+            onClick={() => {
+              setIndexDay((prev) => prev + SIZE_SCROLLING_DAYS);
+              setSelectedDate(dayjs(selectedDate).add(1, "day").toDate());
+            }}
             // className="absolute top-0 z-50"
             style={{ right: "-40px" }}
             variant="ghost"

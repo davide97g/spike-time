@@ -1,30 +1,34 @@
 import { DatePicker } from "@/components/custom/DatePicker";
+import Dropdown from "@/components/custom/Dropdown";
+import { Modal } from "@/components/custom/Modal";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Toggle } from "@/components/ui/toggle";
+import { useReservationFindReservations } from "@/hooks/database/reservations/useReservationFindReservations";
+import { useAuth } from "@/hooks/useAuth";
 import dayjs from "dayjs";
 import { Edit, ToggleLeft, ToggleRight, Trash2 } from "lucide-react";
 import { useState } from "react";
+import { toast } from "sonner";
 import { LoaderReservations } from "./LoaderReservations";
 import { useReservations } from "./useReservations";
-import { useAuth } from "@/hooks/useAuth";
-import { Modal } from "@/components/custom/Modal";
-import { useReservationFindReservations } from "@/hooks/database/reservations/useReservationFindReservations";
-import Dropdown from "@/components/custom/Dropdown";
-import { SelectItem } from "@radix-ui/react-select";
-import { toast } from "sonner";
+import { STReservation } from "types/slot.types";
 
-const generateTimeOptions = () => {
+const generateTimeOptions = ({
+  reservations,
+}: {
+  reservations: STReservation[];
+}) => {
   const options = [];
   for (let hour = 8; hour <= 23; hour++) {
     const time = `${hour.toString().padStart(2, "0")}:00`;
-    options.push(
-      <SelectItem key={time} value={time}>
-        {time}
-      </SelectItem>
-    );
+    if (reservations.every((r) => r.hourStart !== hour))
+      options.push({
+        key: time,
+        label: time,
+      });
   }
   return options;
 };
@@ -139,6 +143,16 @@ export function Reservations() {
                                 variant="ghost"
                                 size="icon"
                                 aria-label="Edit reservation"
+                                onClick={() => {
+                                  setStartDateEditMode(
+                                    dayjs(reservation.date).toDate()
+                                  );
+                                  setSelectedTime(
+                                    `${reservation.hourStart
+                                      .toString()
+                                      .padStart(2, "0")}:00`
+                                  );
+                                }}
                               >
                                 <Edit className="h-4 w-4" />
                               </Button>
@@ -198,20 +212,17 @@ export function Reservations() {
                                   onSelect={setStartDateEditMode}
                                 />
                                 <Dropdown
+                                  placeholder="Seleziona un orario"
+                                  label="Orario"
+                                  options={generateTimeOptions({
+                                    reservations:
+                                      allReservations?.filter(
+                                        (r) => r.id !== reservation.id
+                                      ) ?? [],
+                                  })}
                                   selectedValue={selectedTime}
                                   onChange={(value) => setSelectedTime(value)}
-                                >
-                                  {generateTimeOptions().filter(
-                                    (time) =>
-                                      !allReservations
-                                        ?.map((r) => r.hourStart)
-                                        .includes(
-                                          parseInt(
-                                            time.props.value.split(":")[0]
-                                          )
-                                        )
-                                  )}
-                                </Dropdown>
+                                />
                               </div>
                             )}
                           </Modal>
