@@ -13,8 +13,10 @@ import { AUTH } from "@/services/auth";
 import { LogOut } from "lucide-react";
 import packageJson from "../../../package.json";
 import { Footer } from "@/components/custom/Footer/Footer";
+import { useTranslation } from "react-i18next";
 
 export function PersonalArea() {
+  const { t } = useTranslation();
   const { user, isAdmin } = useAuth();
   const handleSignOut = () => AUTH.logout();
 
@@ -22,7 +24,7 @@ export function PersonalArea() {
     <>
       <Card className="w-[350px] my-12 mx-auto text-left">
         <CardHeader>
-          <CardTitle>Personal Area</CardTitle>
+          <CardTitle>{t("personalArea")}</CardTitle>
           <CardDescription>Your account information</CardDescription>
         </CardHeader>
         <CardContent>
