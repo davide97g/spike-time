@@ -24,7 +24,8 @@ export function Login() {
   }, [isLogged, navigate]);
 
   return (
-    <Card className="w-[350px]">
+    // center the card in the middle of the screen
+    <Card className="w-[350px] mx-auto text-left absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
       <CardHeader>
         <CardTitle>Login</CardTitle>
         <CardDescription>Choose your preferred login method.</CardDescription>

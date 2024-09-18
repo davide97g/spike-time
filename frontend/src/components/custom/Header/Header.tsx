@@ -37,7 +37,10 @@ export function Header() {
 
   return (
     <header className="flex justify-between items-center p-4 bg-background border-b">
-      <div className="text-2xl font-bold">Spike Time</div>
+      <div className="flex flex-row gap-2">
+        <img src="/logo.png" alt="logo" className="h-8 w-8" />
+        <div className="text-2xl font-bold">Spike Time</div>
+      </div>
       <nav className="hidden md:flex space-x-4">
         <NavLink href="/">Book</NavLink>
         <NavLink href="/reservations">Reservations</NavLink>
