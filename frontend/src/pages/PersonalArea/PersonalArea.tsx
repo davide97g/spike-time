@@ -20,6 +20,10 @@ export function PersonalArea() {
   return (
     <Card className="w-[350px] my-12 mx-auto text-left">
       <CardHeader>
+        {/* add logo */}
+        <div className="flex flex-row w-full justify-center">
+          <img src="/logo.png" alt="logo" className="h-16 w-16" />
+        </div>
         <CardTitle>Personal Area</CardTitle>
         <CardDescription>Your account information</CardDescription>
       </CardHeader>
