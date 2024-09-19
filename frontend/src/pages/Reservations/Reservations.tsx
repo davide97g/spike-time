@@ -9,13 +9,14 @@ import { Toggle } from "@/components/ui/toggle";
 import { useReservationFindReservations } from "@/hooks/database/reservations/useReservationFindReservations";
 import { useAuth } from "@/hooks/useAuth";
 import dayjs from "dayjs";
-import { Edit, ToggleLeft, ToggleRight, Trash2 } from "lucide-react";
+import { Edit, Share, ToggleLeft, ToggleRight, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { LoaderReservations } from "./LoaderReservations";
 import { useReservations } from "./useReservations";
 import { STReservation } from "types/slot.types";
 import { AlertDialogModal } from "@/components/custom/AlertDialog";
+import { useNavigate } from "react-router-dom";
 
 const generateTimeOptions = ({
   reservations,
@@ -35,6 +36,7 @@ const generateTimeOptions = ({
 };
 
 export function Reservations() {
+  const navigate = useNavigate();
   const [startDate, setStartDate] = useState<Date | undefined>();
   const [showActive, setShowActive] = useState(true);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
@@ -137,9 +139,20 @@ export function Reservations() {
                           {`${reservation.hourEnd}:00`}
                         </p>
                       </div>
+
                       {status === "active" && (
                         <>
                           <div className="flex space-x-2">
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              aria-label="Edit reservation"
+                              onClick={() =>
+                                navigate(`/share-reservation/${reservation.id}`)
+                              }
+                            >
+                              <Share className="h-4 w-4" />
+                            </Button>
                             <Modal
                               dialogTrigger={
                                 <Button

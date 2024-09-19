@@ -1,3 +1,11 @@
 {
-  "personalArea": "Area Personale"
+  "personalArea": "Area Personale",
+  "pages": {
+    "reservation": {
+      "title": "Prenotazione",
+      "shareOnSocial": "Condividi su social",
+      "copyLink": "Copia link",
+      "copyLinkFeedback": "Link copiato!"
+    }
+  }
 }

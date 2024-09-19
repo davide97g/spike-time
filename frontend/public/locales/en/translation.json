@@ -1,3 +1,11 @@
 {
-  "personalArea": "Personal Area"
+  "personalArea": "Personal Area",
+  "pages": {
+    "reservation": {
+      "title": "Reservation",
+      "shareOnSocial": "Share",
+      "copyLink": "Copy link",
+      "copyLinkFeedback": "Link copied!"
+    }
+  }
 }

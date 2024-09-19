@@ -5,7 +5,7 @@ import { doc, getDoc } from "firebase/firestore";
 
 export const useReservationFindReservationById = ({
   id,
-}: Readonly<{ id: string }>) => {
+}: Readonly<{ id?: string }>) => {
   return useQuery({
     queryKey: ["reservations", id],
     queryFn: async () => {
