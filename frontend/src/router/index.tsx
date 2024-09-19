@@ -9,6 +9,9 @@ const Book = lazy(() => import("../pages/Book"));
 const PersonalArea = lazy(() => import("../pages/PersonalArea"));
 const Reservations = lazy(() => import("../pages/Reservations"));
 const Shop = lazy(() => import("../pages/Shop"));
+const Admin = lazy(() => import("../pages/Admin"));
+const Forbidden = lazy(() => import("../pages/Forbidden"));
+const NotFound = lazy(() => import("../pages/NotFound"));
 
 export const router = createBrowserRouter([
   {
@@ -70,6 +73,43 @@ export const router = createBrowserRouter([
             <Shop />
           </Page>
         </ProtectedRoute>
+      </Suspense>
+    ),
+  },
+  {
+    path: "/admin",
+    element: (
+      <Suspense>
+        <ProtectedRoute>
+          <Page>
+            <Header />
+            <Admin />
+          </Page>
+        </ProtectedRoute>
+      </Suspense>
+    ),
+  },
+  {
+    path: "/forbidden",
+    element: (
+      <Suspense>
+        <ProtectedRoute>
+          <Page>
+            <Header />
+            <Forbidden />
+          </Page>
+        </ProtectedRoute>
+      </Suspense>
+    ),
+  },
+  {
+    path: "*",
+    element: (
+      <Suspense>
+        <Page>
+          <Header />
+          <NotFound />
+        </Page>
       </Suspense>
     ),
   },
