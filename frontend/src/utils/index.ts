@@ -20,3 +20,7 @@ export const getDayLabel = (day: string): string | undefined => {
       return undefined;
   }
 };
+
+export const timeSlots = Array.from({ length: 16 }, (_, i) => i + 8); // 8 AM to 11 PM
+
+export const SIZE_SCROLLING_DAYS = 1;

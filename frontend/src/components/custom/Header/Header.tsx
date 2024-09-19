@@ -46,6 +46,7 @@ export function Header() {
         <NavLink href="/reservations">Reservations</NavLink>
         <NavLink href="/shop">Shop</NavLink>
         <NavLink href="/me">Personal Area</NavLink>
+        <NavLink href="/admin">Admin</NavLink>
       </nav>
       <Sheet open={isOpen} onOpenChange={setIsOpen}>
         <SheetTrigger asChild className="md:hidden">

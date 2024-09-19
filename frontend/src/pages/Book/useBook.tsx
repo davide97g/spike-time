@@ -77,6 +77,8 @@ export const useBook = () => {
         (reservation) =>
           reservation.date === day && reservation.hourStart === hour
       );
+
+      if (reservation?.unavailable) return "unavailable";
       if (!reservation) return "available";
       if (reservation.userId === user?.id) return "owned";
       return "reserved";
