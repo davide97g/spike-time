@@ -3,6 +3,7 @@ import { Page } from "@/components/custom/Page/Page";
 import { lazy, Suspense } from "react";
 import { createBrowserRouter } from "react-router-dom";
 import ProtectedRoute from "./ProtectedRoute";
+import AdminRoute from "./AdminRoute";
 
 const Login = lazy(() => import("../pages/Login"));
 const Book = lazy(() => import("../pages/Book"));
@@ -80,12 +81,12 @@ export const router = createBrowserRouter([
     path: "/admin",
     element: (
       <Suspense>
-        <ProtectedRoute>
+        <AdminRoute>
           <Page>
             <Header />
             <Admin />
           </Page>
-        </ProtectedRoute>
+        </AdminRoute>
       </Suspense>
     ),
   },
