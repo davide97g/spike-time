@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import { getAppCheck } from "firebase-admin/app-check";
 import { getAuth } from "firebase-admin/auth";
 
-export const isPro = async (
+export const isLogged = async (
   req: Request,
   res: Response,
   next: NextFunction

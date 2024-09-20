@@ -2,7 +2,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import express from "express";
 import { addAdminRoutes } from "./api/admin";
-import { addProRoutes } from "./api/pro";
+import { addLoggedRoutes } from "./api/logged";
 import { addPublicRoutes } from "./api/public";
 import { initializeFirebaseApp } from "./config/firebase";
 
@@ -28,8 +28,8 @@ const port = process.env.PORT;
 // **** PUBLIC ****
 addPublicRoutes(app);
 
-// **** PRO USERS ****
-addProRoutes(app);
+// **** LOGGED USERS ****
+addLoggedRoutes(app);
 
 // **** ADMIN ****
 addAdminRoutes(app);
