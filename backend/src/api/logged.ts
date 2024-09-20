@@ -10,6 +10,7 @@ import {
 } from "../features/reservations";
 import { isLogged } from "../middleware/isLogged";
 import { getUserInfoFromToken } from "../middleware/utils";
+import { isApiError } from "../types/error";
 
 const endpointSecret = process.env.STRIPE_CHECKOUT_SIGNING_SECRET;
 
@@ -105,13 +106,15 @@ export const addLoggedRoutes = (app: Express) => {
           body as STReservation,
           tokenInfo.uid
         );
-        if (!reservation) {
-          res.status(400).send({ message: "Error creating reservation" });
+
+        if (isApiError(reservation)) {
+          res.status(reservation.status).send({ message: reservation.message });
           return;
         }
+
         res.send({ reservation });
-      } catch (e) {
-        res.status(403).send({ message: e });
+      } catch (e: any) {
+        res.status(403).send({ message: "Error creating reservation" });
         return;
       }
     }

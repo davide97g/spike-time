@@ -3,6 +3,8 @@ import {
   STReservation,
   STReservationAdmin,
 } from "../../../../types/reservation.types";
+import { ApiError, createApiError } from "../../types/error";
+import { decrementCredit, incrementCredits } from "../credits";
 
 export const createReservationAdmin = async (
   reservationAdmin: STReservationAdmin
@@ -29,21 +31,6 @@ export const deleteReservationAdmin = async (reservationId: string) => {
   await db.collection("reservations").doc(reservationId).delete();
 };
 
-export const createReservation = async (
-  reservation: STReservation,
-  userId: string
-): Promise<STReservation | null> => {
-  if (!reservation.userId)
-    throw new Error("Create Reservation: userId is required");
-  if (reservation.userId !== userId)
-    throw new Error("Create Reservation: reservation does not belong to user");
-
-  const db = getFirestore();
-
-  await db.collection("reservations").doc(reservation.id).set(reservation);
-  return reservation;
-};
-
 export const deleteReservation = async (
   reservationId: string,
   userId: string
@@ -60,6 +47,7 @@ export const deleteReservation = async (
 
   const db = getFirestore();
   await db.collection("reservations").doc(reservationId).delete();
+  await incrementCredits({ userId });
 };
 
 export const getReservationById = async (
@@ -76,6 +64,32 @@ export const getReservationById = async (
       .get();
 
     return reservation.data() as STReservation;
+  } catch (e) {
+    console.error(e);
+    return null;
+  }
+};
+
+const getReservationByDateTime = async (
+  date: string,
+  hourStart: number
+): Promise<STReservation | null> => {
+  try {
+    const db = getFirestore();
+    const reservations: STReservation[] = [];
+
+    const querySnapshot = await db
+      .collection("reservations")
+      .where("date", "==", date)
+      .where("hourStart", "==", hourStart)
+      .limit(1)
+      .get();
+
+    querySnapshot.forEach((doc) => {
+      reservations.push(doc.data() as STReservation);
+    });
+
+    return reservations[0];
   } catch (e) {
     console.error(e);
     return null;
@@ -121,6 +135,49 @@ export const getReservations = async ({
   }
 };
 
+export const createReservation = async (
+  reservation: STReservation,
+  userId: string
+): Promise<STReservation | ApiError> => {
+  if (!reservation.userId)
+    return createApiError(
+      "Create Reservation: userId is required",
+      "create-reservation",
+      400
+    );
+  if (reservation.userId !== userId)
+    return createApiError(
+      "Create Reservation: reservation does not belong to user",
+      "create-reservation",
+      403
+    );
+
+  const reservationExists = await getReservationByDateTime(
+    reservation.date,
+    reservation.hourStart
+  );
+
+  if (reservationExists && reservationExists.unavailable)
+    return createApiError(
+      "Create Reservation: slot unavailable",
+      "create-reservation",
+      400
+    );
+  if (reservationExists && !reservationExists.unavailable)
+    return createApiError(
+      "Create Reservation: slot already reserved",
+      "create-reservation",
+      400
+    );
+
+  const db = getFirestore();
+
+  await db.collection("reservations").doc(reservation.id).set(reservation);
+
+  await decrementCredit({ userId });
+  return reservation;
+};
+
 export const updateReservation = async (
   newReservation: STReservation,
   userId: string
@@ -138,6 +195,16 @@ export const updateReservation = async (
     throw new Error("Create Reservation: reservation userId does not match");
   if (reservation.userId !== userId || newReservation.userId !== userId)
     throw new Error("Create Reservation: reservation does not belong to user");
+
+  const reservationExists = await getReservationByDateTime(
+    newReservation.date,
+    newReservation.hourStart
+  );
+
+  if (reservationExists && reservationExists.unavailable)
+    throw new Error("Create Reservation: slot unavailable");
+  if (reservationExists && reservationExists.id !== newReservation.id)
+    throw new Error("Create Reservation: slot already reserved");
 
   const db = getFirestore();
 

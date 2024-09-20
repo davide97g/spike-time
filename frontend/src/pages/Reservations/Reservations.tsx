@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Toggle } from "@/components/ui/toggle";
-import { useAuth } from "@/hooks/useAuth";
 import dayjs from "dayjs";
 import { Edit, Share, ToggleLeft, ToggleRight, Trash2 } from "lucide-react";
 import { useState } from "react";
@@ -39,7 +38,6 @@ export function Reservations() {
   const [startDate, setStartDate] = useState<Date | undefined>();
   const [showActive, setShowActive] = useState(true);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const { user, refetch: refetchUser } = useAuth();
   const [startDateEditMode, setStartDateEditMode] = useState<Date | undefined>(
     undefined
   );
@@ -53,7 +51,6 @@ export function Reservations() {
     isLoadingAllReservations,
     deleteReservation,
     refetch,
-    updateUser,
     updateReservation,
   } = useReservations({
     startDate,
@@ -243,17 +240,7 @@ export function Reservations() {
                               variant="ghost"
                               size="icon"
                               aria-label="Delete reservation"
-                              onClick={
-                                () => setIsDeleteDialogOpen(true)
-                                // deleteReservation(reservation)
-                                //   .then(() =>
-                                //     updateUser({
-                                //       id: reservation.userId,
-                                //       credits: (user?.credits ?? 0) + 1,
-                                //     }).finally(() => refetchUser())
-                                //   )
-                                //   .finally(() => refetch())
-                              }
+                              onClick={() => setIsDeleteDialogOpen(true)}
                             >
                               <Trash2 className="h-4 w-4" />
                             </Button>
@@ -268,14 +255,9 @@ export function Reservations() {
                               reservation.hourStart
                             }:00?`}
                             onCofirm={() =>
-                              deleteReservation(reservation)
-                                .then(() =>
-                                  updateUser({
-                                    id: reservation.userId,
-                                    credits: (user?.credits ?? 0) + 1,
-                                  }).finally(() => refetchUser())
-                                )
-                                .finally(() => refetch())
+                              deleteReservation(reservation).finally(() =>
+                                refetch()
+                              )
                             }
                           />
                         </>

@@ -1,6 +1,5 @@
 import { useReservationCreateReservation } from "@/hooks/database/reservations/useReservationCreateReservation";
 import { useReservationFindReservations } from "@/hooks/database/reservations/useReservationFindReservations";
-import { useUserUpdateUser } from "@/hooks/database/user/useUserUpdateUser";
 import { useAuth } from "@/hooks/useAuth";
 import dayjs from "dayjs";
 import { useCallback, useMemo, useState } from "react";
@@ -11,9 +10,8 @@ export const useBook = () => {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
   const navigate = useNavigate();
 
-  const { mutateAsync: updateUser } = useUserUpdateUser();
   const { mutateAsync: createReservation } = useReservationCreateReservation();
-  const { user, refetch: refetchUser } = useAuth();
+  const { user } = useAuth();
   const {
     data: reservations,
     isFetching: loadingReservations,
@@ -45,11 +43,6 @@ export const useBook = () => {
         userId: user.id,
       })
         .then(() => {
-          // TODO: move to BE
-          updateUser({
-            id: user.id,
-            credits: (user.credits ?? 0) - 1,
-          }).finally(() => refetchUser());
           toast("Reservation created", {
             description: `Reservation created for ${day} at ${hour}:00`,
           });
