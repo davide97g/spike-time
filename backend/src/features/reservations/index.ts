@@ -30,10 +30,13 @@ export const deleteReservationAdmin = async (reservationId: string) => {
 };
 
 export const createReservation = async (
-  reservation: STReservation
+  reservation: STReservation,
+  userId: string
 ): Promise<STReservation | null> => {
   if (!reservation.userId)
     throw new Error("Create Reservation: userId is required");
+  if (reservation.userId !== userId)
+    throw new Error("Create Reservation: reservation does not belong to user");
 
   const db = getFirestore();
 
@@ -41,9 +44,19 @@ export const createReservation = async (
   return reservation;
 };
 
-export const deleteReservation = async (reservationId: string) => {
+export const deleteReservation = async (
+  reservationId: string,
+  userId: string
+) => {
   if (!reservationId)
     throw new Error("Delete Reservation: reservationId is required");
+
+  const reservation = await getReservationById(reservationId);
+
+  if (!reservation)
+    throw new Error("Delete Reservation: reservation not found");
+  if (reservation.userId !== userId)
+    throw new Error("Delete Reservation: reservation does not belong to user");
 
   const db = getFirestore();
   await db.collection("reservations").doc(reservationId).delete();
@@ -106,4 +119,28 @@ export const getReservations = async ({
     console.error(e);
     return null;
   }
+};
+
+export const updateReservation = async (
+  newReservation: STReservation,
+  userId: string
+): Promise<STReservation | null> => {
+  if (!newReservation.userId)
+    throw new Error("Create Reservation: userId is required");
+
+  const reservation = await getReservationById(newReservation.id);
+
+  if (!reservation)
+    throw new Error("Create Reservation: reservation not found");
+  if (newReservation.id !== reservation.id)
+    throw new Error("Create Reservation: reservation id does not match");
+  if (newReservation.userId !== reservation.userId)
+    throw new Error("Create Reservation: reservation userId does not match");
+  if (reservation.userId !== userId || newReservation.userId !== userId)
+    throw new Error("Create Reservation: reservation does not belong to user");
+
+  const db = getFirestore();
+
+  await db.collection("reservations").doc(reservation.id).set(newReservation);
+  return reservation;
 };

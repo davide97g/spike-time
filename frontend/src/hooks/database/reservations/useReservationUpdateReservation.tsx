@@ -2,16 +2,16 @@ import { API_AUTH } from "@/services/api";
 import { useMutation } from "@tanstack/react-query";
 import { STReservation } from "types/reservation.types";
 
-export const useReservationDeleteReservation = () => {
+export const useReservationUpdateReservation = () => {
   return useMutation({
-    mutationFn: async (reservation: STReservation) => {
+    mutationFn: async ({ reservation }: { reservation: STReservation }) => {
       try {
-        await API_AUTH.deleteReservation({
-          reservationId: reservation.id,
+        await API_AUTH.updateReservation({
+          reservation,
         });
       } catch (e) {
         console.error(e);
-        throw new Error("Error deleting reservation");
+        throw new Error("Error updating reservation");
       }
     },
   });

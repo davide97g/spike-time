@@ -54,7 +54,7 @@ export function Reservations() {
     deleteReservation,
     refetch,
     updateUser,
-    editeReservation,
+    updateReservation,
   } = useReservations({
     startDate,
     startDateEditMode,
@@ -189,12 +189,20 @@ export function Reservations() {
                                       return;
                                     }
 
-                                    editeReservation({
-                                      reservation,
-                                      date: startDateEditMode,
-                                      hourStart: parseInt(
-                                        selectedTime?.split(":")[0]
-                                      ),
+                                    updateReservation({
+                                      reservation: {
+                                        ...reservation,
+                                        date: dayjs(startDateEditMode).format(
+                                          "YYYY-MM-DD"
+                                        ),
+                                        hourStart: parseInt(
+                                          selectedTime?.split(":")[0]
+                                        ),
+                                        hourEnd:
+                                          parseInt(
+                                            selectedTime?.split(":")[0]
+                                          ) + 1,
+                                      },
                                     }).finally(() => refetch());
                                     refetch();
                                   }}

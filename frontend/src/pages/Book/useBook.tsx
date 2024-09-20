@@ -45,6 +45,7 @@ export const useBook = () => {
         userId: user.id,
       })
         .then(() => {
+          // TODO: move to BE
           updateUser({
             id: user.id,
             credits: (user.credits ?? 0) - 1,

@@ -1,14 +1,15 @@
 import express, { Express, Request, Response } from "express";
+import { STReservation } from "../../../types/reservation.types";
 import { stripe } from "../config/stripe";
 import { addCreditsToUser } from "../features/payments";
 import {
   createReservation,
   deleteReservation,
-  getReservationById,
   getReservations,
+  updateReservation,
 } from "../features/reservations";
 import { isLogged } from "../middleware/isLogged";
-import { STReservation } from "../../../types/reservation.types";
+import { getUserInfoFromToken } from "../middleware/utils";
 
 const endpointSecret = process.env.STRIPE_CHECKOUT_SIGNING_SECRET;
 
@@ -54,16 +55,6 @@ export const addLoggedRoutes = (app: Express) => {
     }
   );
 
-  app.get("/reservation/:id", async (req: Request, res: Response) => {
-    const reservationId = req.params.id;
-    const reservation = await getReservationById(reservationId);
-    if (reservation === null) {
-      res.status(404).send({ error: "Reservation not found" });
-      return;
-    }
-    res.send({ reservation });
-  });
-
   app.get("/reservations", [isLogged], async (req: Request, res: Response) => {
     const userId = req.query.userId as string | undefined;
     const dates = req.query.dates as string[] | undefined;
@@ -72,7 +63,18 @@ export const addLoggedRoutes = (app: Express) => {
         ? dates
         : [dates]
       : undefined;
-    console.log({ userId, dates });
+
+    const tokenInfo = await getUserInfoFromToken(req);
+    if (!tokenInfo) {
+      res.status(400).send({ message: "Error getting user info" });
+      return;
+    }
+
+    if (userId && userId !== tokenInfo.uid) {
+      res.status(403).send({ message: "Forbidden: user not authorized" });
+      return;
+    }
+
     const reservations = await getReservations({
       userId,
       dates: datesArray,
@@ -91,17 +93,62 @@ export const addLoggedRoutes = (app: Express) => {
     express.json(),
     async (req: Request, res: Response) => {
       const { body } = req;
-      const reservation = await createReservation(body as STReservation);
-      if (!reservation) {
-        res.status(400).send({ message: "Error creating reservation" });
+
+      const tokenInfo = await getUserInfoFromToken(req);
+      if (!tokenInfo) {
+        res.status(400).send({ message: "Error getting user info" });
         return;
       }
-      res.send({ reservation });
+
+      try {
+        const reservation = await createReservation(
+          body as STReservation,
+          tokenInfo.uid
+        );
+        if (!reservation) {
+          res.status(400).send({ message: "Error creating reservation" });
+          return;
+        }
+        res.send({ reservation });
+      } catch (e) {
+        res.status(403).send({ message: e });
+        return;
+      }
+    }
+  );
+
+  app.put(
+    "/reservation",
+    [isLogged],
+    express.json(),
+    async (req: Request, res: Response) => {
+      const { body } = req;
+      const tokenInfo = await getUserInfoFromToken(req);
+
+      if (!tokenInfo) {
+        res.status(400).send({ message: "Error getting user info" });
+        return;
+      }
+
+      try {
+        const reservation = await updateReservation(
+          body as STReservation,
+          tokenInfo.uid
+        );
+        if (!reservation) {
+          res.status(400).send({ message: "Error creating reservation" });
+          return;
+        }
+        res.send({ reservation });
+      } catch (e) {
+        res.status(403).send({ message: e });
+        return;
+      }
     }
   );
 
   app.delete(
-    "/reservation/admin/:id",
+    "/reservation/:id",
     [isLogged],
     express.json(),
     async (req: Request, res: Response) => {
@@ -111,11 +158,17 @@ export const addLoggedRoutes = (app: Express) => {
         return;
       }
 
+      const tokenInfo = await getUserInfoFromToken(req);
+      if (!tokenInfo) {
+        res.status(400).send({ message: "Error getting user info" });
+        return;
+      }
+
       try {
-        await deleteReservation(id);
+        await deleteReservation(id, tokenInfo.uid);
         res.send({ message: "Reservation deleted" });
       } catch (e) {
-        res.status(400).send({ message: "Error deleting reservation" });
+        res.status(403).send({ message: e });
         return;
       }
     }

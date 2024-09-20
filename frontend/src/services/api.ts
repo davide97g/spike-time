@@ -1,6 +1,6 @@
 import { getToken } from "firebase/app-check";
 import { appCheck, auth } from "../config/firebase";
-import { STReservation } from "types/reservation.types";
+import { STReservation, STReservationAdmin } from "types/reservation.types";
 
 const BACKEND_URL =
   import.meta.env.VITE_APP_BACKEND_URL ?? "http://localhost:3000";
@@ -98,198 +98,161 @@ export const API_AUTH = {
         return null;
       });
   },
-  //   getCheckoutSession: async (id: string) => {
-  //     const appCheckTokenResponse = await getToken(appCheck, true).catch(
-  //       (err) => {
-  //         console.info(err);
-  //         return null;
-  //       }
-  //     );
-  //     const idToken = await auth.currentUser?.getIdToken().catch((err) => {
-  //       console.info(err);
-  //       return null;
-  //     });
-  //     if (!appCheckTokenResponse || !idToken) return null;
-  //     return fetch(`${BACKEND_URL}/checkout-session/${id}`, {
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //         "X-Firebase-AppCheck": appCheckTokenResponse.token,
-  //         Authorization: `Bearer ${idToken}`,
-  //       },
-  //     })
-  //       .then((res) => res.json())
-  //       .then(
-  //         (res) =>
-  //           res as {
-  //             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  //             lineItems: any;
-  //           }
-  //       )
-  //       .catch((err) => {
-  //         console.info(err);
-  //         return null;
-  //       });
-  //   },
-  //   getOrderHistory: async ({
-  //     checkoutSessionIdList,
-  //   }: {
-  //     checkoutSessionIdList: string[];
-  //   }) => {
-  //     const appCheckTokenResponse = await getToken(appCheck, true).catch(
-  //       (err) => {
-  //         console.info(err);
-  //         return null;
-  //       }
-  //     );
-  //     const idToken = await auth.currentUser?.getIdToken().catch((err) => {
-  //       console.info(err);
-  //       return null;
-  //     });
-  //     if (!appCheckTokenResponse || !idToken) return null;
-  //     return fetch(`${BACKEND_URL}/order/history`, {
-  //       method: "POST",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //         "X-Firebase-AppCheck": appCheckTokenResponse.token,
-  //         Authorization: `Bearer ${idToken}`,
-  //       },
-  //       body: JSON.stringify(checkoutSessionIdList),
-  //     })
-  //       .then((res) => res.json())
-  //       .then(
-  //         (res) =>
-  //           res as {
-  //             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  //             history: any[];
-  //           }
-  //       )
-  //       .catch((err) => {
-  //         console.info(err);
-  //         return null;
-  //       });
-  //   },
-  //   newPokemon: async () => {
-  //     const appCheckTokenResponse = await getToken(appCheck, true).catch(
-  //       (err) => {
-  //         console.info(err);
-  //         return null;
-  //       }
-  //     );
-  //     const idToken = await auth.currentUser?.getIdToken().catch((err) => {
-  //       console.info(err);
-  //       return null;
-  //     });
-  //     if (!appCheckTokenResponse?.token || !idToken) return null;
-  //     return fetch(`${BACKEND_URL}/new-pokemon/personal`, {
-  //       method: "POST",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //         "X-Firebase-AppCheck": appCheckTokenResponse.token,
-  //         Authorization: `Bearer ${idToken}`,
-  //       },
-  //     })
-  //       .then((res) => res.json())
-  //       .then(
-  //         (res) =>
-  //           res as {
-  //             message: string;
-  //           }
-  //       )
-  //       .catch((err) => {
-  //         console.info(err);
-  //         return null;
-  //       });
-  //   },
-  //   sendGuessPokemonId: async (
-  //     pokemonId: number,
-  //     gen: GENERATION,
-  //     guessValidationHistory: PokemonValidationGuess[]
-  //   ) => {
-  //     const idToken = await auth.currentUser?.getIdToken().catch((err) => {
-  //       console.info(err);
-  //       return null;
-  //     });
-  //     if (!auth.currentUser?.uid) return null;
-  //     return fetch(
-  //       `${BACKEND_URL}/guess-pokemon/${auth.currentUser.uid}/${pokemonId}/${gen}`,
-  //       {
-  //         method: "POST",
-  //         headers: {
-  //           "Content-Type": "application/json",
-  //           ...(idToken && { Authorization: `Bearer ${idToken}` }),
-  //         },
-  //         body: JSON.stringify(guessValidationHistory),
-  //       }
-  //     )
-  //       .then((res) => res.json())
-  //       .then(
-  //         (res) =>
-  //           res as {
-  //             validation: PokemonValidationGuess;
-  //             remainingPokemon: number;
-  //           }
-  //       );
-  //   },
+  createReservation: async ({
+    reservation,
+  }: {
+    reservation: STReservation;
+  }) => {
+    const appCheckTokenResponse = await getToken(appCheck, true).catch(
+      (err) => {
+        console.info(err);
+        return null;
+      }
+    );
+    const idToken = await auth.currentUser?.getIdToken().catch((err) => {
+      console.info(err);
+      return null;
+    });
+    if (!appCheckTokenResponse?.token || !idToken) return null;
+    return fetch(`${BACKEND_URL}/reservation`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Firebase-AppCheck": appCheckTokenResponse.token,
+        Authorization: `Bearer ${idToken}`,
+      },
+      body: JSON.stringify(reservation),
+    })
+      .then((res) => res.json())
+      .then((res) => res.reservation as STReservation)
+      .catch((err) => {
+        console.info(err);
+        return null;
+      });
+  },
+  updateReservation: async ({
+    reservation,
+  }: {
+    reservation: STReservation;
+  }) => {
+    const appCheckTokenResponse = await getToken(appCheck, true).catch(
+      (err) => {
+        console.info(err);
+        return null;
+      }
+    );
+    const idToken = await auth.currentUser?.getIdToken().catch((err) => {
+      console.info(err);
+      return null;
+    });
+    if (!appCheckTokenResponse?.token || !idToken) return null;
+    return fetch(`${BACKEND_URL}/reservation`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Firebase-AppCheck": appCheckTokenResponse.token,
+        Authorization: `Bearer ${idToken}`,
+      },
+      body: JSON.stringify(reservation),
+    })
+      .then((res) => res.json())
+      .then((res) => res.reservation as STReservation)
+      .catch((err) => {
+        console.info(err);
+        return null;
+      });
+  },
+  deleteReservation: async ({ reservationId }: { reservationId: string }) => {
+    const appCheckTokenResponse = await getToken(appCheck, true).catch(
+      (err) => {
+        console.info(err);
+        return null;
+      }
+    );
+    const idToken = await auth.currentUser?.getIdToken().catch((err) => {
+      console.info(err);
+      return null;
+    });
+    if (!appCheckTokenResponse?.token || !idToken) return null;
+    return fetch(`${BACKEND_URL}/reservation/${reservationId}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Firebase-AppCheck": appCheckTokenResponse.token,
+        Authorization: `Bearer ${idToken}`,
+      },
+    })
+      .then((res) => res.json())
+      .then((res) => res.message as string)
+      .catch((err) => {
+        console.info(err);
+        return null;
+      });
+  },
 };
 
 export const API_ADMIN = {
-  //   getDayStats: async () => {
-  //     const appCheckTokenResponse = await getToken(appCheck, true).catch(
-  //       (err) => {
-  //         console.info(err);
-  //         return null;
-  //       }
-  //     );
-  //     const idToken = await auth.currentUser?.getIdToken().catch((err) => {
-  //       console.info(err);
-  //       return null;
-  //     });
-  //     if (!appCheckTokenResponse?.token || !idToken) return null;
-  //     return fetch(`${BACKEND_URL}/day-stats`, {
-  //       method: "POST",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //         "X-Firebase-AppCheck": appCheckTokenResponse.token,
-  //         Authorization: `Bearer ${idToken}`,
-  //       },
-  //     })
-  //       .then((res) => res.json())
-  //       .then(
-  //         (res) =>
-  //           res as {
-  //             pokemonDayStats: PokedleDayStats;
-  //           }
-  //       )
-  //       .catch((err) => {
-  //         console.info(err);
-  //         return null;
-  //       });
-  //   },
-  //   newPokemon: async () => {
-  //     const appCheckTokenResponse = await getToken(appCheck, true).catch(
-  //       (err) => {
-  //         console.info(err);
-  //         return null;
-  //       }
-  //     );
-  //     const idToken = await auth.currentUser?.getIdToken().catch((err) => {
-  //       console.info(err);
-  //       return null;
-  //     });
-  //     if (!appCheckTokenResponse?.token || !idToken) return null;
-  //     return fetch(`${BACKEND_URL}/new-pokemon`, {
-  //       method: "POST",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //         "X-Firebase-AppCheck": appCheckTokenResponse.token,
-  //         Authorization: `Bearer ${idToken}`,
-  //       },
-  //     })
-  //       .then((res) => res.json())
-  //       .then((res) => res.pokemonDayStats as PokedleDayStats)
-  //       .catch((err) => {
-  //         console.info(err);
-  //         return null;
-  //       });
-  //   },
+  createReservationAdmin: async ({
+    reservationAdmin,
+  }: {
+    reservationAdmin: STReservationAdmin;
+  }) => {
+    const appCheckTokenResponse = await getToken(appCheck, true).catch(
+      (err) => {
+        console.info(err);
+        return null;
+      }
+    );
+    const idToken = await auth.currentUser?.getIdToken().catch((err) => {
+      console.info(err);
+      return null;
+    });
+    if (!appCheckTokenResponse?.token || !idToken) return null;
+    return fetch(`${BACKEND_URL}/reservation/admin`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Firebase-AppCheck": appCheckTokenResponse.token,
+        Authorization: `Bearer ${idToken}`,
+      },
+      body: JSON.stringify(reservationAdmin),
+    })
+      .then((res) => res.json())
+      .then((res) => res.reservationAdmin as STReservationAdmin)
+      .catch((err) => {
+        console.info(err);
+        return null;
+      });
+  },
+  deleteReservationAdmin: async ({
+    reservationId,
+  }: {
+    reservationId: string;
+  }) => {
+    const appCheckTokenResponse = await getToken(appCheck, true).catch(
+      (err) => {
+        console.info(err);
+        return null;
+      }
+    );
+    const idToken = await auth.currentUser?.getIdToken().catch((err) => {
+      console.info(err);
+      return null;
+    });
+    if (!appCheckTokenResponse?.token || !idToken) return null;
+    return fetch(`${BACKEND_URL}/reservation/admin/${reservationId}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Firebase-AppCheck": appCheckTokenResponse.token,
+        Authorization: `Bearer ${idToken}`,
+      },
+    })
+      .then((res) => res.json())
+      .then((res) => res.message as string)
+      .catch((err) => {
+        console.info(err);
+        return null;
+      });
+  },
 };

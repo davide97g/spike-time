@@ -1,10 +1,10 @@
 import { useReservationDeleteReservation } from "@/hooks/database/reservations/useReservationDeleteReservation";
 import { useReservationFindReservations } from "@/hooks/database/reservations/useReservationFindReservations";
+import { useReservationUpdateReservation } from "@/hooks/database/reservations/useReservationUpdateReservation";
 import { useUserUpdateUser } from "@/hooks/database/user/useUserUpdateUser";
 import { useAuth } from "@/hooks/useAuth";
-import { STReservation } from "types/reservation.types";
 import dayjs from "dayjs";
-import { useReservationEditReservation } from "@/hooks/database/reservations/useReservationEditReservation";
+import { STReservation } from "types/reservation.types";
 
 export const useReservations = ({
   startDate,
@@ -32,8 +32,10 @@ export const useReservations = ({
       enabled: !!startDateEditMode,
     });
 
-  const { mutateAsync: editeReservation, isPending: isPendingEditReservation } =
-    useReservationEditReservation();
+  const {
+    mutateAsync: updateReservation,
+    isPending: isPendingUpdateReservation,
+  } = useReservationUpdateReservation();
 
   const { mutateAsync: deleteReservation, isPending } =
     useReservationDeleteReservation();
@@ -70,7 +72,7 @@ export const useReservations = ({
     refetch,
     getReservationStatus,
     updateUser,
-    editeReservation,
-    isPendingEditReservation,
+    updateReservation,
+    isPendingUpdateReservation,
   };
 };
