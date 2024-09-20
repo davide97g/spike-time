@@ -7,11 +7,26 @@ import {
 export const createReservationAdmin = async (
   reservationAdmin: STReservationAdmin
 ): Promise<STReservationAdmin | null> => {
+  if (!reservationAdmin.unavailable)
+    throw new Error(
+      "Create reservation [admin]: reservation should be unavaiable=true"
+    );
+
+  const db = getFirestore();
+
+  await db
+    .collection("reservations")
+    .doc(reservationAdmin.id)
+    .set(reservationAdmin);
   return reservationAdmin;
 };
 
 export const deleteReservationAdmin = async (reservationId: string) => {
-  console.log({ reservationId });
+  if (!reservationId)
+    throw new Error("Delete Reservation: reservationId is required");
+
+  const db = getFirestore();
+  await db.collection("reservations").doc(reservationId).delete();
 };
 
 export const createReservation = async (
@@ -27,20 +42,42 @@ export const createReservation = async (
 };
 
 export const deleteReservation = async (reservationId: string) => {
-  console.log({ reservationId });
+  if (!reservationId)
+    throw new Error("Delete Reservation: reservationId is required");
+
+  const db = getFirestore();
+  await db.collection("reservations").doc(reservationId).delete();
 };
 
 export const getReservationById = async (
   reservationId: string
 ): Promise<STReservation | null> => {
-  return {
-    id: "1",
-    date: "2021-10-10",
-    hourStart: 10,
-    hourEnd: 11,
-    userId: "1",
-    unavailable: false,
-  } as STReservation;
+  if (!reservationId)
+    throw new Error("Get Reservation: reservationId is required");
+
+  try {
+    const db = getFirestore();
+    const reservation = await db
+      .collection("reservations")
+      .doc(reservationId)
+      .get();
+
+    return reservation.data() as STReservation;
+  } catch (e) {
+    console.error(e);
+    return null;
+  }
+};
+
+const generateQuery = (
+  query: FirebaseFirestore.CollectionReference,
+  { userId, dates }: { userId?: string; dates?: string[] }
+) => {
+  if (userId && dates)
+    return query.where("userId", "==", userId).where("date", "in", dates);
+  else if (dates) return query.where("date", "in", dates);
+  else if (userId) return query.where("userId", "==", userId);
+  else return query;
 };
 
 export const getReservations = async ({
@@ -54,17 +91,11 @@ export const getReservations = async ({
     const db = getFirestore();
     const reservations: STReservation[] = [];
 
-    const query = db.collection("reservations");
+    const baseQuery = db.collection("reservations");
 
-    if (userId) {
-      query.where("userId", "==", userId);
-    }
+    const query = generateQuery(baseQuery, { userId, dates });
 
-    if (dates) {
-      query.where("date", "in", dates);
-    }
-
-    const querySnapshot = await query.get();
+    const querySnapshot = await query.limit(20).get();
 
     querySnapshot.forEach((doc) => {
       reservations.push(doc.data() as STReservation);

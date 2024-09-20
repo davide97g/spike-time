@@ -8,8 +8,10 @@ import { useReservationEditReservation } from "@/hooks/database/reservations/use
 
 export const useReservations = ({
   startDate,
+  startDateEditMode,
 }: Readonly<{
   startDate: Date | undefined;
+  startDateEditMode: Date | undefined;
 }>) => {
   const { user } = useAuth();
 
@@ -23,6 +25,12 @@ export const useReservations = ({
     dates: startDate ? [dayjs(startDate).format("YYYY-MM-DD")] : undefined,
     userId: user?.id,
   });
+
+  const { data: allReservations, isLoading: isLoadingAllReservations } =
+    useReservationFindReservations({
+      dates: [dayjs(startDateEditMode).format("YYYY-MM-DD")],
+      enabled: !!startDateEditMode,
+    });
 
   const { mutateAsync: editeReservation, isPending: isPendingEditReservation } =
     useReservationEditReservation();
@@ -55,7 +63,9 @@ export const useReservations = ({
 
   return {
     reservations,
+    allReservations,
     isLoading: isFetching || isPending || loadingUserUpdate,
+    isLoadingAllReservations,
     deleteReservation,
     refetch,
     getReservationStatus,

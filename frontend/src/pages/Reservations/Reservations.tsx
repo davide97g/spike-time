@@ -1,3 +1,4 @@
+import { AlertDialogModal } from "@/components/custom/AlertDialog";
 import { DatePicker } from "@/components/custom/DatePicker";
 import Dropdown from "@/components/custom/Dropdown";
 import { Modal } from "@/components/custom/Modal";
@@ -6,17 +7,15 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Toggle } from "@/components/ui/toggle";
-import { useReservationFindReservations } from "@/hooks/database/reservations/useReservationFindReservations";
 import { useAuth } from "@/hooks/useAuth";
 import dayjs from "dayjs";
 import { Edit, Share, ToggleLeft, ToggleRight, Trash2 } from "lucide-react";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { STReservation } from "types/reservation.types";
 import { LoaderReservations } from "./LoaderReservations";
 import { useReservations } from "./useReservations";
-import { STReservation } from "types/reservation.types";
-import { AlertDialogModal } from "@/components/custom/AlertDialog";
-import { useNavigate } from "react-router-dom";
 
 const generateTimeOptions = ({
   reservations,
@@ -42,28 +41,24 @@ export function Reservations() {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const { user, refetch: refetchUser } = useAuth();
   const [startDateEditMode, setStartDateEditMode] = useState<Date | undefined>(
-    dayjs().toDate()
+    undefined
   );
   const [selectedTime, setSelectedTime] = useState<string | undefined>();
 
   const {
     reservations,
+    allReservations,
     getReservationStatus,
     isLoading,
+    isLoadingAllReservations,
     deleteReservation,
     refetch,
     updateUser,
     editeReservation,
   } = useReservations({
     startDate,
+    startDateEditMode,
   });
-
-  const { data: allReservations, isLoading: isLoadingAllReservations } =
-    useReservationFindReservations({
-      dates: [dayjs(startDateEditMode).format("YYYY-MM-DD")],
-    });
-
-  console.log({ allReservations });
 
   return (
     <div className="container mx-auto px-4 py-8 text-left">
