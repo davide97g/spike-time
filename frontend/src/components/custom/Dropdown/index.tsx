@@ -21,12 +21,7 @@ export default function Dropdown({
   label?: string;
   placeholder?: string;
 }>) {
-  const handleOnChange = (value: string) => {
-    console.log({ value });
-    onChange(value);
-  };
-
-  console.log({ selectedValue, options });
+  const handleOnChange = (value: string) => onChange(value);
 
   return (
     <Select onValueChange={handleOnChange} defaultValue={selectedValue}>

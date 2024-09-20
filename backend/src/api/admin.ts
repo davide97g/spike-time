@@ -7,6 +7,7 @@ import {
   getReservationsAdmin,
 } from "../features/reservations";
 import { isAdmin } from "../middleware/isAdmin";
+import { isApiError } from "../types/error";
 
 export const addAdminRoutes = (app: Express) => {
   // ? Create admins
@@ -101,8 +102,9 @@ export const addAdminRoutes = (app: Express) => {
         userId,
         dates: datesArray,
       });
-      if (reservations === null) {
-        res.status(404).send({ error: "Reservations not found" });
+
+      if (isApiError(reservations)) {
+        res.status(reservations.status).send({ message: reservations.message });
         return;
       }
 

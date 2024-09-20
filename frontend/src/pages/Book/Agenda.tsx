@@ -58,8 +58,6 @@ export default function WeeklyAgendaCard() {
           <Button
             disabled={dayjs(daysList[0].value).isBefore(dayjs(), "day")}
             onClick={() => {
-              console.log({ daysList });
-
               if (dayjs(daysList[0].value).isBefore(dayjs(), "day")) return;
               setSelectedDate(dayjs(selectedDate).subtract(1, "day").toDate());
             }}

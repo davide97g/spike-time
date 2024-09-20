@@ -144,13 +144,6 @@ export const getReservationsAdmin = async ({
   dates?: string[];
 }): Promise<STReservationAdmin[] | ApiError> => {
   try {
-    if (!userId)
-      return createApiError(
-        "Get Reservation: userId is required",
-        "get-reservations-admin",
-        400
-      );
-
     const db = getFirestore();
     const reservations: STReservation[] = [];
 
@@ -172,12 +165,21 @@ export const getReservationsAdmin = async ({
 
     const users = usersSnapshot.map((user) => user.data() as STUserRecap);
 
-    const reservationsAdmin: STReservationAdmin[] = reservations.map(
-      (reservation) => ({
-        ...reservation,
-        user: users.find((user) => user.id === reservation.userId)!,
+    const reservationsAdmin: STReservationAdmin[] = reservations
+      .map((reservation) => {
+        const userFound = users.find((user) => user.id === reservation.userId);
+        if (!userFound) return null;
+        return {
+          ...reservation,
+          user: {
+            id: userFound?.id,
+            displayName: userFound?.displayName,
+            photoURL: userFound?.photoURL,
+            email: userFound?.email,
+          },
+        };
       })
-    );
+      .filter((reservation) => reservation !== null) as STReservationAdmin[];
 
     return reservationsAdmin;
   } catch (e) {

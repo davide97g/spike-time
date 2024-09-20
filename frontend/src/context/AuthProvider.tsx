@@ -32,7 +32,6 @@ export function AuthProvider({ children }: Readonly<{ children: ReactNode }>) {
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(async (user) => {
-      console.log(user);
       setFirebaseUser(user ?? undefined);
     });
     return unsubscribe;
@@ -42,10 +41,7 @@ export function AuthProvider({ children }: Readonly<{ children: ReactNode }>) {
     if (firebaseUser) {
       firebaseUser
         .getIdTokenResult()
-        .then((idTokenResult) => {
-          console.log(idTokenResult);
-          setIsAdmin(!!idTokenResult.claims.admin);
-        })
+        .then((idTokenResult) => setIsAdmin(!!idTokenResult.claims.admin))
         .catch(() => setIsAdmin(false))
         .finally(() => setLoading(false));
     }
