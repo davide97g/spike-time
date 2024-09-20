@@ -8,7 +8,6 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
 export const useBook = () => {
-  const [indexDay, setIndexDay] = useState<number>(0);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
   const navigate = useNavigate();
 
@@ -61,12 +60,12 @@ export const useBook = () => {
     () =>
       Array.from({ length: 3 }, (_, i) =>
         // with -1 the central day is today
-        dayjs(selectedDate).add(i + indexDay - 1, "day")
+        dayjs(selectedDate).add(i - 1, "day")
       ).map((day) => ({
         value: day.format("YYYY-MM-DD"),
         label: `${day.format("dddd").slice(0, 3)} ${day.format("D")}`,
       })),
-    [indexDay, selectedDate]
+    [selectedDate]
   );
 
   const getSlotType = useCallback(
@@ -85,8 +84,6 @@ export const useBook = () => {
   );
 
   return {
-    indexDay,
-    setIndexDay,
     selectedDate,
     setSelectedDate,
     reserveSlot,
