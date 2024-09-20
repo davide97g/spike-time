@@ -1,6 +1,7 @@
 import { getToken } from "firebase/app-check";
 import { appCheck, auth } from "../config/firebase";
 import { STReservation, STReservationAdmin } from "types/reservation.types";
+import { STUser } from "types/user.types";
 
 const BACKEND_URL =
   import.meta.env.VITE_APP_BACKEND_URL ?? "http://localhost:3000";
@@ -20,46 +21,65 @@ export const API = {
         return undefined;
       });
   },
-  //   getPokemons: async ({ gen, name }: { gen: GENERATION; name: string }) => {
-  //     const cleanName = name.trim();
-  //     const nameQuery = cleanName ? `?name=${cleanName}` : "";
-  //     return fetch(`${BACKEND_URL}/pokemon/${gen}${nameQuery}`)
-  //       .then((res) => res.json())
-  //       .then((res) => res as PokemonSummary[])
-  //       .catch((err) => {
-  //         console.info(err);
-  //         return [] as PokemonSummary[];
-  //       });
-  //   },
-  //   sendGuessPokemonId: async (
-  //     pokemonId: number,
-  //     gen: GENERATION,
-  //     guessValidationHistory: PokemonValidationGuess[]
-  //   ) => {
-  //     const idToken = await auth.currentUser?.getIdToken().catch((err) => {
-  //       console.info(err);
-  //       return null;
-  //     });
-  //     return fetch(`${BACKEND_URL}/guess-pokemon/${pokemonId}/${gen}`, {
-  //       method: "POST",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //         ...(idToken && { Authorization: `Bearer ${idToken}` }),
-  //       },
-  //       body: JSON.stringify(guessValidationHistory),
-  //     })
-  //       .then((res) => res.json())
-  //       .then(
-  //         (res) =>
-  //           res as {
-  //             validation: PokemonValidationGuess;
-  //             remainingPokemon: number;
-  //           }
-  //       );
-  //   },
 };
 
 export const API_AUTH = {
+  getUser: async ({ userId }: { userId: string }) => {
+    const appCheckTokenResponse = await getToken(appCheck, true).catch(
+      (err) => {
+        console.info(err);
+        return null;
+      }
+    );
+    const idToken = await auth.currentUser?.getIdToken().catch((err) => {
+      console.info(err);
+      return null;
+    });
+    if (!appCheckTokenResponse || !idToken) return null;
+
+    return fetch(`${BACKEND_URL}/user/${userId}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Firebase-AppCheck": appCheckTokenResponse.token,
+        Authorization: `Bearer ${idToken}`,
+      },
+    })
+      .then((res) => res.json())
+      .then((res) => res.user as STUser)
+      .catch((err) => {
+        console.info(err);
+        return null;
+      });
+  },
+  createUser: async ({ user }: { user: STUser }) => {
+    const appCheckTokenResponse = await getToken(appCheck, true).catch(
+      (err) => {
+        console.info(err);
+        return null;
+      }
+    );
+    const idToken = await auth.currentUser?.getIdToken().catch((err) => {
+      console.info(err);
+      return null;
+    });
+    if (!appCheckTokenResponse?.token || !idToken) return null;
+    return fetch(`${BACKEND_URL}/user`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Firebase-AppCheck": appCheckTokenResponse.token,
+        Authorization: `Bearer ${idToken}`,
+      },
+      body: JSON.stringify(user),
+    })
+      .then((res) => res.json())
+      .then((res) => res.user as STUser)
+      .catch((err) => {
+        console.info(err);
+        return null;
+      });
+  },
   getReservations: async ({
     userId,
     dates,

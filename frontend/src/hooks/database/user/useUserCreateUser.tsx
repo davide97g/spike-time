@@ -1,14 +1,12 @@
-import { STUser } from "types/user.types";
+import { API_AUTH } from "@/services/api";
 import { useMutation } from "@tanstack/react-query";
-import { doc, setDoc } from "firebase/firestore";
-import { db } from "../../../config/firebase";
+import { STUser } from "types/user.types";
 
 export const useUserCreateUser = () => {
   return useMutation({
     mutationFn: async (user: STUser) => {
       try {
-        const docRef = doc(db, "users", user.id);
-        await setDoc(docRef, user, { merge: true });
+        return await API_AUTH.createUser({ user });
       } catch (e) {
         console.error(e);
         throw new Error("Error creating user");

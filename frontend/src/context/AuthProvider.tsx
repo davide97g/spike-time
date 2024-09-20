@@ -7,7 +7,7 @@ import { useUserCreateUser } from "@/hooks/database/user/useUserCreateUser";
 import { STUser } from "types/user.types";
 
 interface AuthContext {
-  user?: STUser;
+  user?: STUser | null;
   isAdmin: boolean;
   isLogged: boolean;
   refetch: () => void;

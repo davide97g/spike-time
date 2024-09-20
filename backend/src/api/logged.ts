@@ -11,6 +11,7 @@ import {
 import { isLogged } from "../middleware/isLogged";
 import { getUserInfoFromToken } from "../middleware/utils";
 import { isApiError } from "../types/error";
+import { createUser, getUserById } from "../features/user";
 
 const endpointSecret = process.env.STRIPE_CHECKOUT_SIGNING_SECRET;
 
@@ -170,6 +171,65 @@ export const addLoggedRoutes = (app: Express) => {
       try {
         await deleteReservation(id, tokenInfo.uid);
         res.send({ message: "Reservation deleted" });
+      } catch (e) {
+        res.status(403).send({ message: e });
+        return;
+      }
+    }
+  );
+
+  app.get("/user/:id", [isLogged], async (req: Request, res: Response) => {
+    const requestedUserId = req.params.id;
+    const tokenInfo = await getUserInfoFromToken(req);
+    if (!tokenInfo) {
+      res.status(400).send({ message: "Error getting user info" });
+      return;
+    }
+    if (tokenInfo.uid !== requestedUserId) {
+      res.status(403).send({ message: "Forbidden: user not authorized" });
+      return;
+    }
+
+    try {
+      const user = await getUserById({
+        userId: requestedUserId,
+        tokenUserId: tokenInfo.uid,
+      });
+      res.send({ user });
+    } catch (e) {
+      if (isApiError(e)) res.status(e.status).send({ message: e.message });
+      else res.status(403).send({ message: e });
+
+      return;
+    }
+  });
+
+  app.post(
+    "/user",
+    [isLogged],
+    express.json(),
+    async (req: Request, res: Response) => {
+      const tokenInfo = await getUserInfoFromToken(req);
+      if (!tokenInfo) {
+        res.status(400).send({ message: "Error getting user info" });
+        return;
+      }
+
+      if (!req.body) {
+        res.status(400).send({ message: "Missing user data" });
+        return;
+      }
+
+      if (req.body.id !== tokenInfo.uid) {
+        res.status(403).send({ message: "Forbidden: user not authorized" });
+        return;
+      }
+
+      try {
+        const user = await createUser({
+          user: req.body,
+        });
+        res.send({ user });
       } catch (e) {
         res.status(403).send({ message: e });
         return;
