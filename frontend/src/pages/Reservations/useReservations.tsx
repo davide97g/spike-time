@@ -39,10 +39,6 @@ export const useReservations = ({
   const isReservationLocked = (date: string, hourStart: number) => {
     const reservationDate = dayjs(date).hour(hourStart);
     const currentDate = dayjs().add(1, "day");
-    console.log(
-      currentDate.format("YYYY-MM-DD HH:mm"),
-      reservationDate.format("YYYY-MM-DD HH:mm")
-    );
     return reservationDate.isBefore(currentDate, "minutes");
   };
 

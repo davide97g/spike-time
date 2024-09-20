@@ -67,15 +67,17 @@ export const addLoggedRoutes = (app: Express) => {
   app.get("/reservations", [isLogged], async (req: Request, res: Response) => {
     const userId = req.query.userId as string | undefined;
     const dates = req.query.dates as string[];
-    const reservation = await getReservations({
+    console.log({ userId, dates });
+    const reservations = await getReservations({
       userId,
       dates,
     });
-    if (reservation === null) {
-      res.status(404).send({ error: "Reservation not found" });
+    if (reservations === null) {
+      res.status(404).send({ error: "Reservations not found" });
       return;
     }
-    res.send({ reservation });
+
+    res.send({ reservations });
   });
 
   app.post(

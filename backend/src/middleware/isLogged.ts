@@ -12,7 +12,8 @@ export const isLogged = async (
 
   if (!appCheckToken || !bearerToken) {
     res.status(401);
-    return next({ message: "Unauthorized: no token" });
+    res.send({ message: "Unauthorized: no token" });
+    return;
   }
 
   try {
@@ -21,6 +22,7 @@ export const isLogged = async (
     return next();
   } catch (err) {
     res.status(401);
-    return next({ message: "Unauthorized: user not authorized" });
+    res.send({ message: "Unauthorized: invalid token" });
+    return;
   }
 };

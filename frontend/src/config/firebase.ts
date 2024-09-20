@@ -1,5 +1,6 @@
 import { getAnalytics } from "firebase/analytics";
 import { initializeApp } from "firebase/app";
+import { initializeAppCheck, ReCaptchaV3Provider } from "firebase/app-check";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 
@@ -17,4 +18,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 export const db = getFirestore(app);
+export const appCheck = initializeAppCheck(app, {
+  provider: new ReCaptchaV3Provider("6LfHgkoqAAAAACUFaYoTYZ4EnqAApTfV8x5wJ3co"),
+});
 getAnalytics(app);
