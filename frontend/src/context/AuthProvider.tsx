@@ -34,7 +34,6 @@ export function AuthProvider({ children }: Readonly<{ children: ReactNode }>) {
     const unsubscribe = auth.onAuthStateChanged(async (user) => {
       console.log(user);
       setFirebaseUser(user ?? undefined);
-      setLoading(false);
     });
     return unsubscribe;
   }, []);
@@ -44,9 +43,11 @@ export function AuthProvider({ children }: Readonly<{ children: ReactNode }>) {
       firebaseUser
         .getIdTokenResult()
         .then((idTokenResult) => {
+          console.log(idTokenResult);
           setIsAdmin(!!idTokenResult.claims.admin);
         })
-        .catch(() => setIsAdmin(false));
+        .catch(() => setIsAdmin(false))
+        .finally(() => setLoading(false));
     }
   }, [firebaseUser]);
 

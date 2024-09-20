@@ -4,6 +4,7 @@ import { STReservationAdmin } from "../../../types/reservation.types";
 import {
   createReservationAdmin,
   deleteReservationAdmin,
+  getReservationsAdmin,
 } from "../features/reservations";
 import { isAdmin } from "../middleware/isAdmin";
 
@@ -81,6 +82,31 @@ export const addAdminRoutes = (app: Express) => {
         res.status(400).send({ message: "Error deleting reservation" });
         return;
       }
+    }
+  );
+
+  app.get(
+    "/reservations/admin",
+    [isAdmin],
+    async (req: Request, res: Response) => {
+      const userId = req.query.userId as string | undefined;
+      const dates = req.query.dates as string[] | undefined;
+      const datesArray = dates
+        ? Array.isArray(dates)
+          ? dates
+          : [dates]
+        : undefined;
+
+      const reservations = await getReservationsAdmin({
+        userId,
+        dates: datesArray,
+      });
+      if (reservations === null) {
+        res.status(404).send({ error: "Reservations not found" });
+        return;
+      }
+
+      res.send({ reservations });
     }
   );
 

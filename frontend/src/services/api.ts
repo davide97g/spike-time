@@ -275,4 +275,69 @@ export const API_ADMIN = {
         return null;
       });
   },
+  getReservationsAdmin: async ({
+    userId,
+    dates,
+  }: {
+    userId?: string;
+    dates?: string[];
+  }) => {
+    const appCheckTokenResponse = await getToken(appCheck, true).catch(
+      (err) => {
+        console.info(err);
+        return null;
+      }
+    );
+    const idToken = await auth.currentUser?.getIdToken().catch((err) => {
+      console.info(err);
+      return null;
+    });
+    if (!appCheckTokenResponse || !idToken) return null;
+    const query = new URL(`${BACKEND_URL}/reservations/admin`);
+    if (userId) query.searchParams.append("userId", userId);
+    if (dates)
+      dates.forEach((date) => query.searchParams.append("dates", date));
+
+    return fetch(query.toString(), {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Firebase-AppCheck": appCheckTokenResponse.token,
+        Authorization: `Bearer ${idToken}`,
+      },
+    })
+      .then((res) => res.json())
+      .then((res) => res.reservations as STReservationAdmin[])
+      .catch((err) => {
+        console.info(err);
+        return null;
+      });
+  },
+  createAdmin: async ({ userToken }: { userToken: string }) => {
+    const appCheckTokenResponse = await getToken(appCheck, true).catch(
+      (err) => {
+        console.info(err);
+        return null;
+      }
+    );
+    const idToken = await auth.currentUser?.getIdToken().catch((err) => {
+      console.info(err);
+      return null;
+    });
+    if (!appCheckTokenResponse?.token || !idToken) return null;
+    return fetch(`${BACKEND_URL}/create-admin`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Firebase-AppCheck": appCheckTokenResponse.token,
+        Authorization: `Bearer ${idToken}`,
+      },
+      body: JSON.stringify({ idToken: userToken }),
+    })
+      .then((res) => res.json())
+      .catch((err) => {
+        console.info(err);
+        return null;
+      });
+  },
 };

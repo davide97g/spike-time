@@ -5,6 +5,7 @@ import {
 } from "../../../../types/reservation.types";
 import { ApiError, createApiError } from "../../types/error";
 import { decrementCredit, incrementCredits } from "../credits";
+import { STUserRecap } from "../../../../types/user.types";
 
 export const createReservationAdmin = async (
   reservationAdmin: STReservationAdmin
@@ -132,6 +133,60 @@ export const getReservations = async ({
   } catch (e) {
     console.error(e);
     return null;
+  }
+};
+
+export const getReservationsAdmin = async ({
+  userId,
+  dates,
+}: {
+  userId?: string;
+  dates?: string[];
+}): Promise<STReservationAdmin[] | ApiError> => {
+  try {
+    if (!userId)
+      return createApiError(
+        "Get Reservation: userId is required",
+        "get-reservations-admin",
+        400
+      );
+
+    const db = getFirestore();
+    const reservations: STReservation[] = [];
+
+    const baseQuery = db.collection("reservations");
+
+    const query = generateQuery(baseQuery, { userId, dates });
+
+    const querySnapshot = await query.limit(20).get();
+
+    querySnapshot.forEach((doc) => {
+      reservations.push(doc.data() as STReservation);
+    });
+
+    const userIdList = reservations.map((reservation) => reservation.userId!);
+
+    const usersSnapshot = await db.getAll(
+      ...userIdList.map((userId) => db.collection("users").doc(userId))
+    );
+
+    const users = usersSnapshot.map((user) => user.data() as STUserRecap);
+
+    const reservationsAdmin: STReservationAdmin[] = reservations.map(
+      (reservation) => ({
+        ...reservation,
+        user: users.find((user) => user.id === reservation.userId)!,
+      })
+    );
+
+    return reservationsAdmin;
+  } catch (e) {
+    console.error(e);
+    return createApiError(
+      "Get Reservation: error fetching reservations",
+      "get-reservations-admin",
+      500
+    );
   }
 };
 
