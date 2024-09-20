@@ -14,7 +14,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { LoaderReservations } from "./LoaderReservations";
 import { useReservations } from "./useReservations";
-import { STReservation } from "types/slot.types";
+import { STReservation } from "types/reservation.types";
 import { AlertDialogModal } from "@/components/custom/AlertDialog";
 import { useNavigate } from "react-router-dom";
 

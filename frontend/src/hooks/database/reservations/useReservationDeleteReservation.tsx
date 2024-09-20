@@ -1,5 +1,5 @@
 import { db } from "@/config/firebase";
-import { STReservation } from "types/slot.types";
+import { STReservation } from "types/reservation.types";
 import { useMutation } from "@tanstack/react-query";
 import { deleteDoc, doc } from "firebase/firestore";
 

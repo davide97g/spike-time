@@ -9,3 +9,10 @@ export interface STUser {
   paymentHistory?: PaymentRecord[];
   isAdmin?: boolean;
 }
+
+export interface STUserRecap {
+  id: string;
+  email: string;
+  displayName: string;
+  photoURL: string;
+}

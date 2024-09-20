@@ -2,7 +2,7 @@ import { useReservationDeleteReservation } from "@/hooks/database/reservations/u
 import { useReservationFindReservations } from "@/hooks/database/reservations/useReservationFindReservations";
 import { useUserUpdateUser } from "@/hooks/database/user/useUserUpdateUser";
 import { useAuth } from "@/hooks/useAuth";
-import { STReservation } from "types/slot.types";
+import { STReservation } from "types/reservation.types";
 import dayjs from "dayjs";
 import { useReservationEditReservation } from "@/hooks/database/reservations/useReservationEditReservation";
 

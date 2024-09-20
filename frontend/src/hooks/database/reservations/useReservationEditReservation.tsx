@@ -2,7 +2,7 @@ import { db } from "@/config/firebase";
 import { useMutation } from "@tanstack/react-query";
 import dayjs from "dayjs";
 import { doc, setDoc } from "firebase/firestore";
-import { STReservation } from "types/slot.types";
+import { STReservation } from "types/reservation.types";
 
 export const useReservationEditReservation = () => {
   return useMutation({
