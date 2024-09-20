@@ -12,12 +12,19 @@ import dayjs from "dayjs";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useBook } from "../Book/useBook";
 import { useAdmin } from "./useAdmin";
+import { useReservationDeleteReservation } from "@/hooks/database/reservations/useReservationDeleteReservation";
 
 export default function Admin() {
-  const { daysList, getSlotType, setIndexDay, indexDay } = useBook();
+  const { daysList, getSlotType, setIndexDay, indexDay, refetch } = useBook();
 
-  const { setSlotState, selectedDate, setSelectedDate, allReservations } =
-    useAdmin();
+  const {
+    makeSlotUnavailable,
+    selectedDate,
+    setSelectedDate,
+    allReservations,
+  } = useAdmin();
+
+  const { mutateAsync: deleteReservation } = useReservationDeleteReservation();
 
   return (
     <div>
@@ -52,8 +59,6 @@ export default function Admin() {
             <Button
               disabled={dayjs(daysList[0].value).isBefore(dayjs(), "day")}
               onClick={() => {
-                console.log({ daysList });
-
                 if (dayjs(daysList[0].value).isBefore(dayjs(), "day")) return;
                 setIndexDay(indexDay - SIZE_SCROLLING_DAYS);
                 setSelectedDate(
@@ -81,13 +86,14 @@ export default function Admin() {
                   const reservation = allReservations?.find(
                     (res) => res.date === day.value && res.hourStart === hour
                   );
+
                   return (
                     <Button
-                      // disabled={
-                      //   dayjs(day.value).isBefore(dayjs(), "day") ||
-                      //   slotType === "reserved"
-                      // }
-                      key={day.value}
+                      disabled={
+                        dayjs(day.value).isBefore(dayjs(), "day") ||
+                        slotType === "reserved"
+                      }
+                      key={`${day.value} ${hour}`}
                       variant={
                         slotType !== "available" ? "default" : "secondary"
                       }
@@ -96,18 +102,18 @@ export default function Admin() {
                         slotType === "owned" ? "cursor-default" : ""
                       }`}
                       onClick={(e) => {
-                        console.log("here1");
-
-                        if (slotType === "reserved" || slotType === "owned")
+                        if (slotType === "reserved" || slotType === "owned") {
                           e.preventDefault();
-                        console.log("here2");
+                        }
 
-                        if (slotType === "available")
-                          setSlotState(day.value, hour, true);
+                        if (slotType === "available") {
+                          makeSlotUnavailable(day.value, hour);
+                          return;
+                        }
 
-                        console.log("here3");
-
-                        setSlotState(day.value, hour, false, reservation?.id);
+                        if (slotType === "unavailable") {
+                          deleteReservation(reservation!).then(() => refetch());
+                        }
                       }}
                     >
                       {`${hour}:00`}

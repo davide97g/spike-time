@@ -14,27 +14,18 @@ export const useAdmin = () => {
     ],
   });
 
-  console.log({ allReservations });
-
-  const setSlotState = (
-    day: string,
-    hour: number,
-    isUnavailable: boolean,
-    id?: string
-  ) => {
-    const reservation = allReservations?.find((res) => res.id === id);
-
+  const makeSlotUnavailable = (day: string, hour: number) => {
     changeSlotState({
-      id: reservation?.id ?? crypto.randomUUID(),
+      id: crypto.randomUUID(),
       date: dayjs(day).format("YYYY-MM-DD"),
       hourStart: hour,
       hourEnd: hour + 1,
-      unavailable: isUnavailable,
+      unavailable: true,
     }).then(() => refetch());
   };
 
   return {
-    setSlotState,
+    makeSlotUnavailable,
     selectedDate,
     setSelectedDate,
     allReservations,
