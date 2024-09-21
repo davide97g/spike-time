@@ -70,7 +70,9 @@ export const useBook = () => {
         (reservation) =>
           reservation.date === day && reservation.hourStart === hour
       );
+
       if (!reservation) return "available";
+      if (reservation.unavailable) return "unavailable";
       if (reservation.userId === user?.id) return "owned";
       return "reserved";
     },
@@ -84,5 +86,6 @@ export const useBook = () => {
     daysList,
     getSlotType,
     loadingReservations,
+    refetch,
   };
 };

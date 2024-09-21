@@ -8,7 +8,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { getDayLabel } from "@/utils";
+import { getDayLabel, timeSlots } from "@/utils";
 import dayjs from "dayjs";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Fragment } from "react";
@@ -16,7 +16,6 @@ import { AgendaSkeleton } from "./LoaderAgenda";
 import { useBook } from "./useBook";
 
 // const daysOfWeek = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-const timeSlots = Array.from({ length: 16 }, (_, i) => i + 8); // 8 AM to 11 PM
 
 export default function WeeklyAgendaCard() {
   const {
