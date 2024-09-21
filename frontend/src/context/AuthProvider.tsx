@@ -7,7 +7,7 @@ import { useUserCreateUser } from "@/hooks/database/user/useUserCreateUser";
 import { STUser } from "types/user.types";
 
 interface AuthContext {
-  user?: STUser;
+  user?: STUser | null;
   isAdmin: boolean;
   isLogged: boolean;
   refetch: () => void;
@@ -32,9 +32,7 @@ export function AuthProvider({ children }: Readonly<{ children: ReactNode }>) {
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(async (user) => {
-      console.log(user);
       setFirebaseUser(user ?? undefined);
-      setLoading(false);
     });
     return unsubscribe;
   }, []);
@@ -43,10 +41,9 @@ export function AuthProvider({ children }: Readonly<{ children: ReactNode }>) {
     if (firebaseUser) {
       firebaseUser
         .getIdTokenResult()
-        .then((idTokenResult) => {
-          setIsAdmin(!!idTokenResult.claims.admin);
-        })
-        .catch(() => setIsAdmin(false));
+        .then((idTokenResult) => setIsAdmin(!!idTokenResult.claims.admin))
+        .catch(() => setIsAdmin(false))
+        .finally(() => setLoading(false));
     }
   }, [firebaseUser]);
 

@@ -1,14 +1,14 @@
-import { db } from "@/config/firebase";
-import { STReservation } from "types/slot.types";
+import { API_AUTH } from "@/services/api";
 import { useMutation } from "@tanstack/react-query";
-import { doc, setDoc } from "firebase/firestore";
+import { STReservation } from "types/reservation.types";
 
 export const useReservationCreateReservation = () => {
   return useMutation({
     mutationFn: async (reservation: STReservation) => {
       try {
-        const docRef = doc(db, "reservations", reservation.id);
-        await setDoc(docRef, reservation, { merge: true });
+        await API_AUTH.createReservation({
+          reservation,
+        });
       } catch (e) {
         console.error(e);
         throw new Error("Error creating reservation");

@@ -1,20 +1,19 @@
 import { useReservationDeleteReservation } from "@/hooks/database/reservations/useReservationDeleteReservation";
 import { useReservationFindReservations } from "@/hooks/database/reservations/useReservationFindReservations";
-import { useUserUpdateUser } from "@/hooks/database/user/useUserUpdateUser";
+import { useReservationUpdateReservation } from "@/hooks/database/reservations/useReservationUpdateReservation";
 import { useAuth } from "@/hooks/useAuth";
-import { STReservation } from "types/slot.types";
 import dayjs from "dayjs";
-import { useReservationEditReservation } from "@/hooks/database/reservations/useReservationEditReservation";
+import { STReservation } from "types/reservation.types";
 
 export const useReservations = ({
   startDate,
+  startDateEditMode,
 }: Readonly<{
   startDate: Date | undefined;
+  startDateEditMode: Date | undefined;
 }>) => {
   const { user } = useAuth();
 
-  const { mutateAsync: updateUser, isPending: loadingUserUpdate } =
-    useUserUpdateUser();
   const {
     data: reservations,
     isFetching,
@@ -24,8 +23,16 @@ export const useReservations = ({
     userId: user?.id,
   });
 
-  const { mutateAsync: editeReservation, isPending: isPendingEditReservation } =
-    useReservationEditReservation();
+  const { data: allReservations, isLoading: isLoadingAllReservations } =
+    useReservationFindReservations({
+      dates: [dayjs(startDateEditMode).format("YYYY-MM-DD")],
+      enabled: !!startDateEditMode,
+    });
+
+  const {
+    mutateAsync: updateReservation,
+    isPending: isPendingUpdateReservation,
+  } = useReservationUpdateReservation();
 
   const { mutateAsync: deleteReservation, isPending } =
     useReservationDeleteReservation();
@@ -39,10 +46,6 @@ export const useReservations = ({
   const isReservationLocked = (date: string, hourStart: number) => {
     const reservationDate = dayjs(date).hour(hourStart);
     const currentDate = dayjs().add(1, "day");
-    console.log(
-      currentDate.format("YYYY-MM-DD HH:mm"),
-      reservationDate.format("YYYY-MM-DD HH:mm")
-    );
     return reservationDate.isBefore(currentDate, "minutes");
   };
 
@@ -59,12 +62,14 @@ export const useReservations = ({
 
   return {
     reservations,
-    isLoading: isFetching || isPending || loadingUserUpdate,
+    allReservations,
+    isLoading: isFetching || isPending,
+    isLoadingAllReservations,
     deleteReservation,
     refetch,
     getReservationStatus,
-    updateUser,
-    editeReservation,
-    isPendingEditReservation,
+
+    updateReservation,
+    isPendingUpdateReservation,
   };
 };

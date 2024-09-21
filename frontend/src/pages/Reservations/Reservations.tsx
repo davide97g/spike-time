@@ -1,3 +1,4 @@
+import { AlertDialogModal } from "@/components/custom/AlertDialog";
 import { DatePicker } from "@/components/custom/DatePicker";
 import Dropdown from "@/components/custom/Dropdown";
 import { Modal } from "@/components/custom/Modal";
@@ -6,17 +7,14 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Toggle } from "@/components/ui/toggle";
-import { useReservationFindReservations } from "@/hooks/database/reservations/useReservationFindReservations";
-import { useAuth } from "@/hooks/useAuth";
 import dayjs from "dayjs";
 import { Edit, Share, ToggleLeft, ToggleRight, Trash2 } from "lucide-react";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { STReservation } from "types/reservation.types";
 import { LoaderReservations } from "./LoaderReservations";
 import { useReservations } from "./useReservations";
-import { STReservation } from "types/slot.types";
-import { AlertDialogModal } from "@/components/custom/AlertDialog";
-import { useNavigate } from "react-router-dom";
 
 const generateTimeOptions = ({
   reservations,
@@ -40,28 +38,24 @@ export function Reservations() {
   const [startDate, setStartDate] = useState<Date | undefined>();
   const [showActive, setShowActive] = useState(true);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const { user, refetch: refetchUser } = useAuth();
   const [startDateEditMode, setStartDateEditMode] = useState<Date | undefined>(
-    dayjs().toDate()
+    undefined
   );
   const [selectedTime, setSelectedTime] = useState<string | undefined>();
 
   const {
     reservations,
+    allReservations,
     getReservationStatus,
     isLoading,
+    isLoadingAllReservations,
     deleteReservation,
     refetch,
-    updateUser,
-    editeReservation,
+    updateReservation,
   } = useReservations({
     startDate,
+    startDateEditMode,
   });
-
-  const { data: allReservations, isLoading: isLoadingAllReservations } =
-    useReservationFindReservations({
-      dates: [dayjs(startDateEditMode).format("YYYY-MM-DD")],
-    });
 
   return (
     <div className="container mx-auto px-4 py-8 text-left">
@@ -192,12 +186,20 @@ export function Reservations() {
                                       return;
                                     }
 
-                                    editeReservation({
-                                      reservation,
-                                      date: startDateEditMode,
-                                      hourStart: parseInt(
-                                        selectedTime?.split(":")[0]
-                                      ),
+                                    updateReservation({
+                                      reservation: {
+                                        ...reservation,
+                                        date: dayjs(startDateEditMode).format(
+                                          "YYYY-MM-DD"
+                                        ),
+                                        hourStart: parseInt(
+                                          selectedTime?.split(":")[0]
+                                        ),
+                                        hourEnd:
+                                          parseInt(
+                                            selectedTime?.split(":")[0]
+                                          ) + 1,
+                                      },
                                     }).finally(() => refetch());
                                     refetch();
                                   }}
@@ -238,17 +240,7 @@ export function Reservations() {
                               variant="ghost"
                               size="icon"
                               aria-label="Delete reservation"
-                              onClick={
-                                () => setIsDeleteDialogOpen(true)
-                                // deleteReservation(reservation)
-                                //   .then(() =>
-                                //     updateUser({
-                                //       id: reservation.userId,
-                                //       credits: (user?.credits ?? 0) + 1,
-                                //     }).finally(() => refetchUser())
-                                //   )
-                                //   .finally(() => refetch())
-                              }
+                              onClick={() => setIsDeleteDialogOpen(true)}
                             >
                               <Trash2 className="h-4 w-4" />
                             </Button>
@@ -263,14 +255,9 @@ export function Reservations() {
                               reservation.hourStart
                             }:00?`}
                             onCofirm={() =>
-                              deleteReservation(reservation)
-                                .then(() =>
-                                  updateUser({
-                                    id: reservation.userId,
-                                    credits: (user?.credits ?? 0) + 1,
-                                  }).finally(() => refetchUser())
-                                )
-                                .finally(() => refetch())
+                              deleteReservation(reservation).finally(() =>
+                                refetch()
+                              )
                             }
                           />
                         </>

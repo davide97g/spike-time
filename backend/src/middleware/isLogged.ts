@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import { getAppCheck } from "firebase-admin/app-check";
 import { getAuth } from "firebase-admin/auth";
 
-export const isPro = async (
+export const isLogged = async (
   req: Request,
   res: Response,
   next: NextFunction
@@ -12,7 +12,8 @@ export const isPro = async (
 
   if (!appCheckToken || !bearerToken) {
     res.status(401);
-    return next({ message: "Unauthorized: no token" });
+    res.send({ message: "Unauthorized: no token" });
+    return;
   }
 
   try {
@@ -21,6 +22,7 @@ export const isPro = async (
     return next();
   } catch (err) {
     res.status(401);
-    return next({ message: "Unauthorized: user not authorized" });
+    res.send({ message: "Unauthorized: invalid token" });
+    return;
   }
 };

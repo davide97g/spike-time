@@ -7,15 +7,15 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { SIZE_SCROLLING_DAYS, timeSlots } from "@/utils";
+import { useReservationDeleteReservation } from "@/hooks/database/reservations/useReservationDeleteReservation";
+import { timeSlots } from "@/utils";
 import dayjs from "dayjs";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useBook } from "../Book/useBook";
 import { useAdmin } from "./useAdmin";
-import { useReservationDeleteReservation } from "@/hooks/database/reservations/useReservationDeleteReservation";
 
 export default function Admin() {
-  const { daysList, getSlotType, setIndexDay, indexDay, refetch } = useBook();
+  const { daysList, getSlotType, refetch } = useBook();
 
   const {
     makeSlotUnavailable,
@@ -41,7 +41,6 @@ export default function Admin() {
           <DatePicker
             selectedDate={selectedDate}
             onSelect={(date) => {
-              setIndexDay(0);
               setSelectedDate(date);
             }}
           />
@@ -60,7 +59,7 @@ export default function Admin() {
               disabled={dayjs(daysList[0].value).isBefore(dayjs(), "day")}
               onClick={() => {
                 if (dayjs(daysList[0].value).isBefore(dayjs(), "day")) return;
-                setIndexDay(indexDay - SIZE_SCROLLING_DAYS);
+
                 setSelectedDate(
                   dayjs(selectedDate).subtract(1, "day").toDate()
                 );
@@ -124,7 +123,6 @@ export default function Admin() {
             ))}
             <Button
               onClick={() => {
-                setIndexDay((prev) => prev + SIZE_SCROLLING_DAYS);
                 setSelectedDate(dayjs(selectedDate).add(1, "day").toDate());
               }}
               // className="absolute top-0 z-50"

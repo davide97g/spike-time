@@ -1,5 +1,5 @@
-import { Modal } from "@/components/custom/Modal";
 import { DatePicker } from "@/components/custom/DatePicker";
+import { Modal } from "@/components/custom/Modal";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -19,8 +19,6 @@ import { useBook } from "./useBook";
 
 export default function WeeklyAgendaCard() {
   const {
-    indexDay,
-    setIndexDay,
     selectedDate,
     setSelectedDate,
     reserveSlot,
@@ -43,10 +41,7 @@ export default function WeeklyAgendaCard() {
         </CardDescription>
         <DatePicker
           selectedDate={selectedDate}
-          onSelect={(date) => {
-            setIndexDay(0);
-            setSelectedDate(date);
-          }}
+          onSelect={(date) => setSelectedDate(date)}
         />
       </CardHeader>
       <CardContent className="overflow-x-auto w-500">
@@ -63,7 +58,6 @@ export default function WeeklyAgendaCard() {
             disabled={dayjs(daysList[0].value).isBefore(dayjs(), "day")}
             onClick={() => {
               if (dayjs(daysList[0].value).isBefore(dayjs(), "day")) return;
-              setIndexDay(indexDay - SIZE_SCROLLING_DAYS);
               setSelectedDate(dayjs(selectedDate).subtract(1, "day").toDate());
             }}
             variant="ghost"
@@ -132,7 +126,6 @@ export default function WeeklyAgendaCard() {
           ))}
           <Button
             onClick={() => {
-              setIndexDay((prev) => prev + SIZE_SCROLLING_DAYS);
               setSelectedDate(dayjs(selectedDate).add(1, "day").toDate());
             }}
             // className="absolute top-0 z-50"

@@ -3,10 +3,9 @@ import { ReactNode } from "react";
 import { Navigate } from "react-router-dom";
 
 const AdminRoute = ({ children }: { children: ReactNode }) => {
-  // TODO: Implement isAdmin
-  const { isLogged } = useAuth();
+  const { isAdmin } = useAuth();
 
-  if (!isLogged) {
+  if (!isAdmin) {
     // If not authenticated, redirect to login
     return <Navigate to="/forbidden" />;
   }

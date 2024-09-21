@@ -1,17 +1,17 @@
-import { API_AUTH } from "@/services/api";
+import { API_ADMIN } from "@/services/api";
 import { useMutation } from "@tanstack/react-query";
 import { STReservation } from "types/reservation.types";
 
-export const useReservationDeleteReservation = () => {
+export const useReservationDeleteReservationAdmin = () => {
   return useMutation({
     mutationFn: async (reservation: STReservation) => {
       try {
-        await API_AUTH.deleteReservation({
+        await API_ADMIN.deleteReservationAdmin({
           reservationId: reservation.id,
         });
       } catch (e) {
         console.error(e);
-        throw new Error("Error deleting reservation");
+        throw new Error("Error deleting reservation admin");
       }
     },
   });
