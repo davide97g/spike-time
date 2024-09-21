@@ -1,11 +1,15 @@
-import { useChangeSlotState } from "@/hooks/database/admin/useChangeSlotState";
+import { useReservationCreateReservationAdmin } from "@/hooks/database/reservations/useReservationCreateReservationAdmin";
+import { useReservationDeleteReservationAdmin } from "@/hooks/database/reservations/useReservationDeleteReservationAdmin";
 import { useReservationFindReservations } from "@/hooks/database/reservations/useReservationFindReservations";
 import dayjs from "dayjs";
 import { useState } from "react";
 
 export const useAdmin = () => {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
-  const { mutateAsync: changeSlotState } = useChangeSlotState();
+  const { mutateAsync: createReservationAdmin } =
+    useReservationCreateReservationAdmin();
+  const { mutateAsync: deleteReservationAdmin } =
+    useReservationDeleteReservationAdmin();
   const { refetch, data: allReservations } = useReservationFindReservations({
     dates: [
       dayjs(selectedDate).subtract(1, "day").format("YYYY-MM-DD"),
@@ -14,18 +18,10 @@ export const useAdmin = () => {
     ],
   });
 
-  const makeSlotUnavailable = (day: string, hour: number) => {
-    changeSlotState({
-      id: crypto.randomUUID(),
-      date: dayjs(day).format("YYYY-MM-DD"),
-      hourStart: hour,
-      hourEnd: hour + 1,
-      unavailable: true,
-    }).then(() => refetch());
-  };
-
   return {
-    makeSlotUnavailable,
+    createReservationAdmin,
+    deleteReservationAdmin,
+    refetch,
     selectedDate,
     setSelectedDate,
     allReservations,

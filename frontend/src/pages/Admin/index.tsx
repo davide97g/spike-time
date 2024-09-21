@@ -7,7 +7,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { useReservationDeleteReservation } from "@/hooks/database/reservations/useReservationDeleteReservation";
 import { timeSlots } from "@/utils";
 import dayjs from "dayjs";
 import { ChevronLeft, ChevronRight } from "lucide-react";
@@ -18,13 +17,12 @@ export default function Admin() {
   const { daysList, getSlotType, refetch } = useBook();
 
   const {
-    makeSlotUnavailable,
+    createReservationAdmin,
+    deleteReservationAdmin,
     selectedDate,
     setSelectedDate,
     allReservations,
   } = useAdmin();
-
-  const { mutateAsync: deleteReservation } = useReservationDeleteReservation();
 
   return (
     <div>
@@ -106,12 +104,20 @@ export default function Admin() {
                         }
 
                         if (slotType === "available") {
-                          makeSlotUnavailable(day.value, hour);
+                          createReservationAdmin({
+                            id: crypto.randomUUID(),
+                            date: day.value,
+                            hourStart: hour,
+                            hourEnd: hour + 1,
+                            unavailable: true,
+                          }).then(() => refetch());
                           return;
                         }
 
                         if (slotType === "unavailable") {
-                          deleteReservation(reservation!).then(() => refetch());
+                          deleteReservationAdmin(reservation!).then(() =>
+                            refetch()
+                          );
                         }
                       }}
                     >

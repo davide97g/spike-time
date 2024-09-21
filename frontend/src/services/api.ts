@@ -213,9 +213,9 @@ export const API_AUTH = {
 
 export const API_ADMIN = {
   createReservationAdmin: async ({
-    reservationAdmin,
+    reservation,
   }: {
-    reservationAdmin: STReservationAdmin;
+    reservation: STReservation;
   }) => {
     const appCheckTokenResponse = await getToken(appCheck, true).catch(
       (err) => {
@@ -235,10 +235,10 @@ export const API_ADMIN = {
         "X-Firebase-AppCheck": appCheckTokenResponse.token,
         Authorization: `Bearer ${idToken}`,
       },
-      body: JSON.stringify(reservationAdmin),
+      body: JSON.stringify(reservation),
     })
       .then((res) => res.json())
-      .then((res) => res.reservationAdmin as STReservationAdmin)
+      .then((res) => res.reservation as STReservation)
       .catch((err) => {
         console.info(err);
         return null;

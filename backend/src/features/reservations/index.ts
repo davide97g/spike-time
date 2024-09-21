@@ -8,8 +8,8 @@ import { decrementCredit, incrementCredits } from "../credits";
 import { STUserRecap } from "../../../../types/user.types";
 
 export const createReservationAdmin = async (
-  reservationAdmin: STReservationAdmin
-): Promise<STReservationAdmin | null> => {
+  reservationAdmin: STReservation
+): Promise<STReservation | null> => {
   if (!reservationAdmin.unavailable)
     throw new Error(
       "Create reservation [admin]: reservation should be unavaiable=true"

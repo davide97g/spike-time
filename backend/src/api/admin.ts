@@ -1,6 +1,6 @@
 import express, { Express, Request, Response } from "express";
 import { getAuth } from "firebase-admin/auth";
-import { STReservationAdmin } from "../../../types/reservation.types";
+import { STReservation } from "../../../types/reservation.types";
 import {
   createReservationAdmin,
   deleteReservationAdmin,
@@ -54,14 +54,12 @@ export const addAdminRoutes = (app: Express) => {
     express.json(),
     async (req: Request, res: Response) => {
       const { body } = req;
-      const reservationAdmin = await createReservationAdmin(
-        body as STReservationAdmin
-      );
-      if (!reservationAdmin) {
+      const reservation = await createReservationAdmin(body as STReservation);
+      if (!reservation) {
         res.status(400).send({ message: "Error creating reservation" });
         return;
       }
-      res.send({ reservationAdmin });
+      res.send({ reservation });
     }
   );
 

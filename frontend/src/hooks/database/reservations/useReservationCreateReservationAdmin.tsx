@@ -1,13 +1,13 @@
 import { API_ADMIN } from "@/services/api";
 import { useMutation } from "@tanstack/react-query";
-import { STReservationAdmin } from "types/reservation.types";
+import { STReservation } from "types/reservation.types";
 
 export const useReservationCreateReservationAdmin = () => {
   return useMutation({
-    mutationFn: async (reservationAdmin: STReservationAdmin) => {
+    mutationFn: async (reservation: STReservation) => {
       try {
         await API_ADMIN.createReservationAdmin({
-          reservationAdmin,
+          reservation,
         });
       } catch (e) {
         console.error(e);
