@@ -8,7 +8,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { getDayLabel, SIZE_SCROLLING_DAYS, timeSlots } from "@/utils";
+import { getDayLabel, timeSlots } from "@/utils";
 import dayjs from "dayjs";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Fragment } from "react";
