@@ -65,7 +65,8 @@ export const useBook = () => {
   const getSlotType = useCallback(
     (day: string, hour: number) => {
       // check if is in the past
-      if (dayjs(day).hour(hour).isBefore(dayjs(), "minute")) return "reserved"; // TODO: change to "past" when past is implemented
+      if (dayjs(day).hour(hour).isBefore(dayjs().hour(hour), "minute"))
+        return "past";
       const reservation = reservations?.find(
         (reservation) =>
           reservation.date === day && reservation.hourStart === hour

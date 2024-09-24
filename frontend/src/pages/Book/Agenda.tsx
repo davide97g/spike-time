@@ -14,8 +14,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Fragment } from "react";
 import { AgendaSkeleton } from "./LoaderAgenda";
 import { useBook } from "./useBook";
-
-// const daysOfWeek = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+import { Slot } from "@/components/custom/Slot";
 
 export default function WeeklyAgendaCard() {
   const {
@@ -93,26 +92,11 @@ export default function WeeklyAgendaCard() {
                       }
                       title="Conferma prenotazione"
                       dialogTrigger={
-                        <Button
-                          disabled={
-                            dayjs(day.value).isBefore(dayjs(), "day") ||
-                            slotType === "reserved"
-                          }
-                          key={day.value}
-                          variant={
-                            slotType !== "available" ? "default" : "secondary"
-                          }
-                          color={slotType === "available" ? "green" : ""}
-                          className={`h-10 w-full text-xs ${
-                            slotType === "owned" ? "cursor-default" : ""
-                          }`}
-                          onClick={(e) => {
-                            if (slotType === "reserved" || slotType === "owned")
-                              e.preventDefault();
-                          }}
-                        >
-                          {`${hour}:00`}
-                        </Button>
+                        <Slot
+                          slotType={slotType}
+                          hour={`${hour}:00`}
+                          day={day.value}
+                        />
                       }
                     >
                       {`Sei sicuro di voler confermare la tua prenotazione per ${hour}:00 di ${getDayLabel(
@@ -128,7 +112,6 @@ export default function WeeklyAgendaCard() {
             onClick={() => {
               setSelectedDate(dayjs(selectedDate).add(1, "day").toDate());
             }}
-            // className="absolute top-0 z-50"
             style={{ right: "-40px" }}
             variant="ghost"
           >
