@@ -1,0 +1,15 @@
+{
+  "name": "spike-time",
+  "version": "1.0.0",
+  "description": "Beach volley booking app",
+  "main": "index.js",
+  "scripts": {
+    "prepare": "husky"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "husky": "^9.1.6"
+  }
+}

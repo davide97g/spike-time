@@ -1,0 +1,2 @@
+cd frontend && yarn lint && yarn build
+cd ../backend && yarn build
