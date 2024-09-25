@@ -12,26 +12,9 @@ import { Edit, Share, ToggleLeft, ToggleRight, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { STReservation } from "types/reservation.types";
 import { LoaderReservations } from "./LoaderReservations";
 import { useReservations } from "./useReservations";
-
-const generateTimeOptions = ({
-  reservations,
-}: {
-  reservations: STReservation[];
-}) => {
-  const options = [];
-  for (let hour = 8; hour <= 23; hour++) {
-    const time = `${hour.toString().padStart(2, "0")}:00`;
-    if (reservations.every((r) => r.hourStart !== hour))
-      options.push({
-        key: time,
-        label: time,
-      });
-  }
-  return options;
-};
+import { generateTimeSlots } from "@/utils/generateTimeSlots";
 
 export function Reservations() {
   const navigate = useNavigate();
@@ -224,7 +207,7 @@ export function Reservations() {
                                   <Dropdown
                                     placeholder="Seleziona un orario"
                                     label="Orario"
-                                    options={generateTimeOptions({
+                                    options={generateTimeSlots({
                                       reservations:
                                         allReservations?.filter(
                                           (r) => r.id !== reservation.id
