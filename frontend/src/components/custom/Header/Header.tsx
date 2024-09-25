@@ -44,6 +44,7 @@ export function Header() {
       <nav className="hidden md:flex space-x-4">
         <NavLink href="/">Book</NavLink>
         <NavLink href="/reservations">Reservations</NavLink>
+        <NavLink href="/reservations-admin">Reservations Admin</NavLink>
         <NavLink href="/shop">Shop</NavLink>
         <NavLink href="/me">Personal Area</NavLink>
         <NavLink href="/admin">Admin</NavLink>
@@ -59,6 +60,7 @@ export function Header() {
           <nav className="flex flex-col space-y-4 mt-4">
             <NavLink href="/">Book</NavLink>
             <NavLink href="/reservations">Reservations</NavLink>
+            <NavLink href="/reservations-admin">Reservations Admin</NavLink>
             <NavLink href="/shop">Shop</NavLink>
             <NavLink href="/me">Personal Area</NavLink>
           </nav>
