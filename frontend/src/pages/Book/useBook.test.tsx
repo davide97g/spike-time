@@ -1,12 +1,14 @@
 // @vitest-environment jsdom
+import * as useAuth from "@/hooks/useAuth";
 import { createCustomProviderWrapper } from "@/test/utils";
-import { renderHook } from "@testing-library/react-hooks";
+import { act, renderHook } from "@testing-library/react-hooks";
+import dayjs from "dayjs";
+
+import * as toastModule from "sonner";
 import { afterEach, describe, expect, it, vi, vitest } from "vitest";
 import "../../test/mocks";
 import { useBook } from "./useBook";
-import dayjs from "dayjs";
 
-// mock useReservationFindReservations
 vitest.mock(
   "@/hooks/database/reservations/useReservationFindReservations",
   () => ({
@@ -48,21 +50,26 @@ vitest.mock(
   })
 );
 
-vitest.mock("@/hooks/useAuth", () => ({
-  useAuth: () => ({
-    user: { id: "1", credits: 1 },
-    isAdmin: false,
-    isLogged: true,
-    refetch: vitest.fn(),
-  }),
+vitest.mock("sonner", () => ({
+  toast: vitest.fn(),
 }));
 
 // mock getAuth
 describe("useBook", () => {
   describe("getSlotType", () => {
+    vitest.mock("@/hooks/useAuth", () => ({
+      useAuth: () => ({
+        user: { id: "1", credits: 1 },
+        isAdmin: false,
+        isLogged: true,
+        refetch: vitest.fn(),
+      }),
+    }));
+
     afterEach(() => {
       vi.restoreAllMocks();
     });
+
     it("should return 'past' if slot is before now", () => {
       // render a component that uses useBook
       const { result } = renderHook(() => useBook(), {
@@ -137,6 +144,76 @@ describe("useBook", () => {
         12
       );
       expect(slotType).toBe("unavailable");
+    });
+  });
+  describe("reserveSlot ", () => {
+    afterEach(() => {
+      vitest.resetAllMocks();
+    });
+    it("should show error toast if user has no credits", async () => {
+      vi.spyOn(useAuth, "useAuth").mockReturnValue({
+        user: {
+          id: "1",
+          credits: 0,
+          displayName: "John Doe",
+          email: "john.doe@email.com",
+          photoURL: "https://avatar.com/john-doe",
+        },
+        isAdmin: false,
+        isLogged: true,
+        refetch: vi.fn(),
+      });
+
+      const { result } = renderHook(() => useBook(), {
+        wrapper: createCustomProviderWrapper(),
+      });
+
+      const toastSpy = vi.spyOn(toastModule, "toast");
+
+      await act(async () => {
+        await result.current.reserveSlot(
+          dayjs().add(1, "day").format("YYYY-MM-DD"),
+          9
+        );
+      });
+
+      expect(toastSpy).toHaveBeenCalledWith(
+        "Error reserving",
+        expect.any(Object)
+      );
+    });
+
+    it("should show success toast if reservation is created", async () => {
+      vi.spyOn(useAuth, "useAuth").mockReturnValue({
+        user: {
+          id: "1",
+          credits: 1,
+          displayName: "John Doe",
+          email: "john.doe@email.com",
+          photoURL: "https://avatar.com/john-doe",
+        },
+        isAdmin: false,
+        isLogged: true,
+        refetch: vi.fn(),
+      });
+
+      const { result } = renderHook(() => useBook(), {
+        wrapper: createCustomProviderWrapper(),
+      });
+
+      const toastSpy = vi.spyOn(toastModule, "toast");
+
+      await act(async () => {
+        await result.current.reserveSlot(
+          dayjs().add(1, "day").format("YYYY-MM-DD"),
+          9
+        );
+      });
+
+      expect(toastSpy).toHaveBeenCalledWith(
+        "Reservation created",
+        expect.any(Object)
+      );
     });
   });
 });

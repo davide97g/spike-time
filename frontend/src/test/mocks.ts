@@ -5,6 +5,7 @@ vitest.mock("firebase/app-check", () => {
   return {
     initializeAppCheck: vitest.fn(),
     ReCaptchaV3Provider: vitest.fn(),
+    getToken: () => Promise.resolve(vitest.fn()),
   };
 });
 

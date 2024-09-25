@@ -25,6 +25,7 @@ export const useBook = () => {
   });
 
   const reserveSlot = (day: string, hour: number) => {
+    console.log("day", day, user?.credits);
     if (!user?.credits) {
       toast("Error reserving", {
         description: "You don't have enough credits to make a reservation",
@@ -33,9 +34,9 @@ export const useBook = () => {
           onClick: () => navigate("/shop"),
         },
       });
-      return;
+      return false;
     } else
-      createReservation({
+      return createReservation({
         id: crypto.randomUUID(),
         date: dayjs(day).format("YYYY-MM-DD"),
         hourStart: hour,
