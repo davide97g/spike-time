@@ -1,5 +1,6 @@
 import { DatePicker } from "@/components/custom/DatePicker";
 import { Modal } from "@/components/custom/Modal";
+import { Slot } from "@/components/custom/Slot";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -8,13 +9,12 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Loader } from "@/components/ui/loader";
 import { getDayLabel, timeSlots } from "@/utils";
 import dayjs from "dayjs";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Fragment } from "react";
-import { AgendaSkeleton } from "./LoaderAgenda";
 import { useBook } from "./useBook";
-import { Slot } from "@/components/custom/Slot";
 
 export default function WeeklyAgendaCard() {
   const {
@@ -26,7 +26,7 @@ export default function WeeklyAgendaCard() {
     loadingReservations,
   } = useBook();
 
-  if (loadingReservations) return <AgendaSkeleton />;
+  if (loadingReservations) return <Loader />;
 
   return (
     <Card

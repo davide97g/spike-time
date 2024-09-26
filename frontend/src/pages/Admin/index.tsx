@@ -12,9 +12,10 @@ import dayjs from "dayjs";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useBook } from "../Book/useBook";
 import { useAdmin } from "./useAdmin";
+import { Loader } from "@/components/ui/loader";
 
 export default function Admin() {
-  const { daysList, getSlotType, refetch } = useBook();
+  const { getSlotType, refetch } = useBook();
 
   const {
     createReservationAdmin,
@@ -22,11 +23,20 @@ export default function Admin() {
     selectedDate,
     setSelectedDate,
     allReservations,
+    daysList,
+    isLoadingReservations,
+    isLoadingCreateReservationAdmin,
+    isLoadingDeleteReservationAdmin,
   } = useAdmin();
+
+  if (isLoadingReservations) return <Loader />;
 
   return (
     <div>
       <h1>Admin Page</h1>
+      {(isLoadingCreateReservationAdmin || isLoadingDeleteReservationAdmin) && (
+        <Loader hover />
+      )}
       <Card
         className="w-full max-w-4xl mt-2"
         style={{ maxHeight: "800px", overflowY: "auto" }}
