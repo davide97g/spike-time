@@ -157,10 +157,12 @@ export const getReservationsAdmin = async ({
       reservations.push(doc.data() as STReservation);
     });
 
-    const userIdList = reservations.map((reservation) => reservation.userId!);
+    const userIdList = reservations
+      .filter((res) => !!res.userId)
+      .map((reservation) => reservation.userId!);
 
     const usersSnapshot = await db.getAll(
-      ...userIdList.map((userId) => db.collection("users").doc(userId))
+      ...userIdList.map((uId) => db.collection("users").doc(uId))
     );
 
     const users = usersSnapshot.map((user) => user.data() as STUserRecap);

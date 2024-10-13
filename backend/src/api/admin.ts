@@ -87,6 +87,7 @@ export const addAdminRoutes = (app: Express) => {
   app.get(
     "/reservations/admin",
     [isAdmin],
+    express.json(),
     async (req: Request, res: Response) => {
       const userId = req.query.userId as string | undefined;
       const dates = req.query.dates as string[] | undefined;
