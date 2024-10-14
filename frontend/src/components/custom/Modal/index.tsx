@@ -16,15 +16,17 @@ export function Modal({
   onConfirmButton,
   title,
   children,
+  disable,
 }: {
   dialogTrigger: ReactNode;
   onConfirmButton: ReactNode;
   title: string;
   children: ReactNode;
+  disable?: boolean;
 }) {
   return (
     <Dialog>
-      <DialogTrigger>{dialogTrigger}</DialogTrigger>
+      <DialogTrigger disabled={disable}>{dialogTrigger}</DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>

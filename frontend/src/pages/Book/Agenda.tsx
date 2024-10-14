@@ -80,6 +80,7 @@ export default function WeeklyAgendaCard() {
                 return (
                   <Fragment key={hour}>
                     <Modal
+                      disable={slotType !== "available"}
                       onConfirmButton={
                         <Button
                           onClick={() => {
