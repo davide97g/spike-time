@@ -1,5 +1,4 @@
 import { useReservationFindReservationsAdmin } from "@/hooks/database/reservations";
-import { useAuth } from "@/hooks/useAuth";
 import dayjs from "dayjs";
 import { STReservation } from "types/reservation.types";
 
@@ -8,15 +7,12 @@ export const useAllReservations = ({
 }: Readonly<{
   startDate: Date | undefined;
 }>) => {
-  const { user } = useAuth();
-
   const {
     data: reservations,
     isFetching,
     refetch,
   } = useReservationFindReservationsAdmin({
     dates: startDate ? [dayjs(startDate).format("YYYY-MM-DD")] : undefined,
-    userId: user?.id,
   });
 
   const isReservationExpired = (date: string) => {

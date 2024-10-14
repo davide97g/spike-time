@@ -10,6 +10,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { LoaderReservations } from "../Reservations/LoaderReservations";
 import { useAllReservations } from "./useAllReservations";
+import { EnvelopeClosedIcon } from "@radix-ui/react-icons";
 
 export function AllReservations() {
   const navigate = useNavigate();
@@ -95,14 +96,26 @@ export function AllReservations() {
                         </p>
                       </div>
 
-                      <div>
-                        <p className="text-sm text-gray-600">
-                          {reservation.user.displayName}
-                        </p>
-                        <p className="text-sm text-gray-600">
-                          {reservation.user.email}
-                        </p>
-                        <img src={reservation.user.photoURL} alt="User" />
+                      <div className="flex items-center space-x-2">
+                        <img
+                          className="w-8 h-8 rounded-full"
+                          src={reservation.user.photoURL}
+                          alt="User"
+                        />
+                        <div className="flex flex-col">
+                          <p className="text-sm text-gray-600">
+                            {reservation.user.displayName}
+                          </p>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() =>
+                              window.open(`mailto:${reservation.user.email}`)
+                            }
+                          >
+                            <EnvelopeClosedIcon className="h-4 w-4" />
+                          </Button>
+                        </div>
                       </div>
 
                       {status === "active" && (

@@ -30,12 +30,14 @@ export function AuthProvider({ children }: Readonly<{ children: ReactNode }>) {
 
   const isLogged = useMemo(() => !!firebaseUser, [firebaseUser]);
 
-  useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged(async (user) => {
-      setFirebaseUser(user ?? undefined);
-    });
-    return unsubscribe;
-  }, []);
+  useEffect(
+    () =>
+      auth.onAuthStateChanged(async (user) => {
+        setFirebaseUser(user ?? undefined);
+        if (!user) setLoading(false);
+      }),
+    []
+  );
 
   useEffect(() => {
     if (firebaseUser) {
